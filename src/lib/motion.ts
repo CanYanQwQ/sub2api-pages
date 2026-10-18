@@ -50,8 +50,8 @@ export function useReveal() {
 
     watch(document)
 
-    // Sections can mount after this effect runs — the catalogue waits on its
-    // own request — and an observer registered once would never see them, so
+    // Sections can mount after this effect runs — anything gated on a request
+    // lands late — and an observer registered once would never see them, so
     // they would stay at opacity 0 forever. Re-scan on every subtree change;
     // `observe` is idempotent for elements already tracked.
     const mutations = new MutationObserver((records) => {

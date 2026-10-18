@@ -12,7 +12,6 @@ import Capabilities from './components/sections/Capabilities'
 import Flow from './components/sections/Flow'
 import QuickStart from './components/sections/QuickStart'
 import Upstreams from './components/sections/Upstreams'
-import ModelCatalog from './components/sections/ModelCatalog'
 import CallToAction from './components/sections/CallToAction'
 import { detectLang, resolveConfig } from './lib/config'
 import {
@@ -139,8 +138,7 @@ export default function App() {
               <Flow />
               <QuickStart />
               <Upstreams />
-              <ModelCatalog />
-                    <CallToAction />
+              <CallToAction />
             </main>
             <Footer />
           </div>

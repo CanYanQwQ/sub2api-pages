@@ -122,17 +122,6 @@ export const en: Dict = {
     clients: 'Client CLIs',
     version: 'Target release',
   },
-  models: {
-    title: 'Model catalogue',
-    lead: 'Synced from the group and channel configuration in the admin console, listing every model a group can currently route to.',
-    groups: 'groups',
-    models: 'models',
-    free: 'free',
-    perCall: 'call',
-    from: 'from',
-    note: 'Prices are what this instance currently charges: token-billed models show input / output per million tokens, request-billed models show the price per call, and image models list one price per resolution. When long-context pricing splits into tiers, the row shows the first tier with a "from" marker and the full breakdown on hover.',
-    empty: 'This instance does not publish its model catalogue.',
-  },
   cta: {
     title: 'Connect your subscription today',
     body: 'Create an account, mint a key, and make the first call in minutes.',

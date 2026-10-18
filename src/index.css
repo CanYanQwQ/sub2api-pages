@@ -46,45 +46,6 @@
   --c-shadow-a: 0.5;
 }
 
-/* Inverted band.
- *
- * One section runs on the dark palette even while the page is light. It is the
- * page's only tonal break, and it re-maps the same tokens rather than
- * introducing a second colour system — every utility inside keeps working, and
- * `@theme inline` means the utilities read `--c-*` at the point of use.
- *
- * Under the dark theme the band inverts the other way: slightly lifted off the
- * page instead of pinned to it, so it still reads as a distinct block. */
-.sheet-invert {
-  --c-canvas: #0b1213;
-  --c-canvas-deep: #0f191a;
-  --c-surface: #111b1c;
-  --c-surface-2: #162223;
-  --c-ink: #eef2f1;
-  --c-ink-2: #a9b8b6;
-  --c-ink-3: #7d8f8d;
-  --c-line: #223031;
-  --c-line-strong: #334546;
-  --c-brand: #2dd4bf;
-  --c-brand-ink: #5eead4;
-  --c-brand-bright: #99f6e4;
-  --c-brand-wash: #10302c;
-  --c-signal: #e5a63f;
-  --c-signal-wash: #2a2113;
-}
-
-[data-theme='dark'] .sheet-invert {
-  --c-canvas: #0d1718;
-  --c-canvas-deep: #101c1d;
-  --c-surface: #111d1f;
-  --c-surface-2: #152325;
-  --c-ink: #eef2f1;
-  --c-ink-2: #aebdbb;
-  --c-ink-3: #86989a;
-  --c-line: #223234;
-  --c-line-strong: #33474a;
-}
-
 /* ------------------------------------------------------------------ */
 /* Fonts                                                               */
 /* ------------------------------------------------------------------ */
@@ -368,23 +329,6 @@
   }
 }
 
-/* A row of the catalogue: same entrance, applied per model line so a dense
-   block assembles instead of appearing all at once. */
-@keyframes row-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@utility row-in {
-  animation: row-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 /* Answer text settles after the disclosure opens. <details> cannot animate its
    own height without script, so the body fades rather than the row expanding. */
 @keyframes faq-in {
@@ -409,8 +353,7 @@ details[open] .faq-body {
 
 @media (prefers-reduced-motion: reduce) {
   .rise,
-  .wire-flow,
-  .row-in {
+  .wire-flow {
     animation: none !important;
     opacity: 1 !important;
     stroke-dasharray: none !important;
