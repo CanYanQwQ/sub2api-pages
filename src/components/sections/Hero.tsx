@@ -138,7 +138,6 @@ export default function Hero() {
                     // click exactly like the primary field above it, but two of
                     // them only cost one line instead of a stacked table.
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="text-mono-label mr-1">{t.hero.altEndpoints}</span>
                       {alternates.map((entry) => (
                         <CopyChip
                           key={entry.endpoint}

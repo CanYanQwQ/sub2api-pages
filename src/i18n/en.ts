@@ -30,7 +30,6 @@ export const en: Dict = {
     endpointLabel: 'Gateway',
     endpointCopy: 'Copy',
     endpointCopied: 'Copied',
-    altEndpoints: 'Other endpoints',
     altCopy: 'Copy this endpoint',
   },
   protocol: {

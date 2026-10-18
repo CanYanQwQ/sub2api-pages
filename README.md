@@ -246,7 +246,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 账号池与调度 / 密钥与分组 / 用量与账单 / 渠道监控 / 模型广场 / 多种登录方式 | 后台对应的六个功能区 |
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
 | 模型目录（深色区块） | `GET /api/v1/model-plaza`，逐分组列出公开模型，并显示**该实例上的实际单价**（`models[].pricing.intervals`）。按 token 计价显示每百万 token 的输入 / 输出价；按次计价（图片 / 视频）显示每次价，并把 `tier_label` 里 1K / 2K / 4K 等分辨率档位逐档列出；长上下文分档（`≤272K` / `>272K`）行内显示首档并标「起」，完整分段在悬停提示中。分组的 `rate_multiplier` **每个分组都显示**（含 `×1`）；接口关闭或需登录时整块消失 |
-| 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL）。没有配置时不显示这一块 |
+| 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL），前面不加小标签。没有配置时不显示这一块 |
 | 首屏规格条：3 / 15 / 3 / 版本号 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值 |
 | 页脚 `iframe / home_content` | 本页面自身的接入方式 |
 | 页脚版本号 | 「已连接」时显示实例真实版本，否则显示 `0.2.17` |

@@ -30,7 +30,6 @@ export const ja: Dict = {
     endpointLabel: 'ゲートウェイ',
     endpointCopy: 'コピー',
     endpointCopied: 'コピーしました',
-    altEndpoints: 'その他の接続先',
     altCopy: 'このエンドポイントをコピー',
   },
   protocol: {

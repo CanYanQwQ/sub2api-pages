@@ -29,7 +29,6 @@ export const zh = {
     endpointLabel: '网关地址',
     endpointCopy: '复制',
     endpointCopied: '已复制',
-    altEndpoints: '其他接入地址',
     altCopy: '复制该接入地址',
   },
   protocol: {
