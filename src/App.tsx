@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { InstanceContext } from './components/InstanceContext'
 import type { InstanceState } from './components/InstanceContext'
+import { useReveal } from './lib/motion'
 import { ThemeProvider } from './components/ThemeContext'
 import { I18nProvider } from './i18n'
 import TopBar from './components/layout/TopBar'
@@ -123,6 +124,8 @@ export default function App() {
     const text = settings?.site_subtitle?.trim()
     if (description && text) description.setAttribute('content', text)
   }, [settings, config.siteName])
+
+  useReveal()
 
   return (
     <InstanceContext.Provider value={instance}>

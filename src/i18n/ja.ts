@@ -30,6 +30,7 @@ export const ja: Dict = {
     endpointLabel: 'ゲートウェイ',
     endpointCopy: 'コピー',
     endpointCopied: 'コピーしました',
+    altEndpoints: 'その他の接続先',
   },
   protocol: {
     title: 'ひとつのポートに、三つのプロトコル',
@@ -127,6 +128,8 @@ export const ja: Dict = {
     groups: 'グループ',
     models: 'モデル',
     free: '無料',
+    perCall: '回',
+    note: '価格はこのインスタンスの実際の請求単価です。トークン課金は 100 万トークンあたりの入力 / 出力、リクエスト課金は 1 回あたりの価格を表示します。倍率は反映済みです。',
     empty: 'このインスタンスはモデルカタログを公開していません。',
   },
   faq: {

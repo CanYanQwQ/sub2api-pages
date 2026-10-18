@@ -30,6 +30,7 @@ export const en: Dict = {
     endpointLabel: 'Gateway',
     endpointCopy: 'Copy',
     endpointCopied: 'Copied',
+    altEndpoints: 'Other endpoints',
   },
   protocol: {
     title: 'One port, three protocols',
@@ -127,6 +128,8 @@ export const en: Dict = {
     groups: 'groups',
     models: 'models',
     free: 'free',
+    perCall: 'call',
+    note: 'Prices are what this instance currently charges: token-billed models show input / output per million tokens, request-billed models show the price per call. Multipliers are already applied.',
     empty: 'This instance does not publish its model catalogue.',
   },
   faq: {

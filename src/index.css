@@ -349,6 +349,59 @@
   animation: rise 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Scroll entrance. Deliberately opt-in and JS-gated: `html.reveal-on` is only
+   added once the observer is running, so a browser that never executes the
+   script shows the page normally instead of a field of invisible sections. */
+@utility reveal {
+  html.reveal-on & {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html.reveal-on &.is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A row of the catalogue: same entrance, applied per model line so a dense
+   block assembles instead of appearing all at once. */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility row-in {
+  animation: row-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Answer text settles after the disclosure opens. <details> cannot animate its
+   own height without script, so the body fades rather than the row expanding. */
+@keyframes faq-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+details[open] .faq-body {
+  animation: faq-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @utility wire-flow {
   stroke-dasharray: 3 13;
   animation: dash-flow 1.5s linear infinite;
@@ -356,10 +409,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rise,
-  .wire-flow {
+  .wire-flow,
+  .row-in {
     animation: none !important;
     opacity: 1 !important;
     stroke-dasharray: none !important;
+  }
+
+  /* Reveal must never leave content hidden: drop the start state entirely. */
+  html.reveal-on .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 

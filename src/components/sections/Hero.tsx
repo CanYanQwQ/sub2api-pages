@@ -4,6 +4,7 @@ import { StatusDot } from '../ui'
 import { useInstance } from '../InstanceContext'
 import { useI18n } from '../../i18n'
 import { UPSTREAM_PLATFORMS } from '../../data/content'
+import { useCountUp } from '../../lib/motion'
 import { cn } from '../../lib/cn'
 import RoutingSchematic from './RoutingSchematic'
 
@@ -38,6 +39,23 @@ export default function Hero() {
         ? 'signal'
         : 'muted'
   const host = base ? base.replace(/^https?:\/\//, '') : ''
+
+  // Real alternates published by the instance (admin → 自定义接入地址). Only
+  // ones that resolve to an http(s) origin survive, and the primary is filtered
+  // out so the list never repeats the field directly above it.
+  const alternates = (settings?.custom_endpoints ?? [])
+    .map((entry) => ({
+      name: entry?.name?.trim() || '',
+      endpoint: (entry?.endpoint ?? '').trim().replace(/\/+$/, ''),
+    }))
+    .filter((entry) => /^https?:\/\//i.test(entry.endpoint) && entry.endpoint !== base)
+    .slice(0, 3)
+
+  // The three counts animate once; the version string is not a number and is
+  // rendered as-is.
+  const protocolCount = useCountUp(3)
+  const upstreamCount = useCountUp(UPSTREAM_PLATFORMS.length)
+  const clientCount = useCountUp(3)
 
   return (
     <div className="relative">
@@ -115,6 +133,24 @@ export default function Hero() {
                     label={t.hero.endpointCopy}
                     copiedLabel={t.hero.endpointCopied}
                   />
+                  {alternates.length > 0 ? (
+                    <dl className="mt-3">
+                      <div className="mb-1.5 text-mono-label">{t.hero.altEndpoints}</div>
+                      {alternates.map((entry) => (
+                        <div
+                          key={entry.endpoint}
+                          className="flex items-baseline justify-between gap-4 border-t border-line/70 py-1"
+                        >
+                          <dt className="truncate text-[11.5px] leading-snug text-ink-3">
+                            {entry.name || entry.endpoint}
+                          </dt>
+                          <dd className="shrink-0 font-mono text-[11px] leading-snug text-ink-2">
+                            {entry.endpoint.replace(/^https?:\/\//, '')}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
                 </div>
               ) : (
                 <p className="max-w-[46ch] border-l border-line pl-3 text-[13px] leading-relaxed text-ink-3">
@@ -153,9 +189,9 @@ export default function Hero() {
           style={{ animationDelay: '300ms' }}
         >
           {[
-            { label: t.spec.protocols, value: '3' },
-            { label: t.spec.upstreams, value: String(UPSTREAM_PLATFORMS.length) },
-            { label: t.spec.clients, value: '3' },
+            { label: t.spec.protocols, value: String(protocolCount) },
+            { label: t.spec.upstreams, value: String(upstreamCount) },
+            { label: t.spec.clients, value: String(clientCount) },
             {
               label: t.spec.version,
               value: settings?.version ? `v${settings.version}` : '0.2.17',

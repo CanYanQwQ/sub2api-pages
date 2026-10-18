@@ -13,22 +13,33 @@ export function Container({ children, className }: { children: ReactNode; classN
  * A page band. `rule` draws the hairline that separates bands in the technical
  * sheet layout; it is opted into per section rather than applied globally so
  * spacing stays intentional.
+ *
+ * Bands are denser than they look: the vertical rhythm is set here once, so
+ * `py-14/16/20` is what every section actually spends between blocks.
  */
 export function Section({
   id,
   children,
   className,
   rule,
+  reveal = true,
 }: {
   id?: string
   children: ReactNode
   className?: string
   rule?: boolean
+  reveal?: boolean
 }) {
   return (
     <section
       id={id}
-      className={cn('relative scroll-mt-24 py-16 sm:py-20 lg:py-24', rule && 'border-t border-line', className)}
+      data-reveal={reveal ? '' : undefined}
+      className={cn(
+        'relative scroll-mt-24 py-14 sm:py-16 lg:py-20',
+        reveal && 'reveal',
+        rule && 'border-t border-line',
+        className,
+      )}
     >
       {children}
     </section>

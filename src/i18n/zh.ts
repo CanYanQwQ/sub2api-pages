@@ -29,6 +29,7 @@ export const zh = {
     endpointLabel: '网关地址',
     endpointCopy: '复制',
     endpointCopied: '已复制',
+    altEndpoints: '其他接入地址',
   },
   protocol: {
     title: '一个端口，三种协议',
@@ -126,6 +127,8 @@ export const zh = {
     groups: '个分组',
     models: '个模型',
     free: '免费',
+    perCall: '次',
+    note: '价格为实例当前的实收单价：按 token 计费的模型显示每百万 token 的输入 / 输出价，按次计费的模型显示每次调用价。倍率已计入。',
     empty: '当前实例未公开模型目录。',
   },
   faq: {

@@ -248,9 +248,26 @@ export function prefetchPublicSettings(base: string): Promise<PublicSettings | n
  * the full payload also carries per-interval pricing tables that are of no use
  * on a landing page.
  */
+/** Billing modes defined by the backend (`service.BillingMode*`). */
+export type BillingMode = 'token' | 'per_request' | 'image' | 'video'
+
+/**
+ * Actual charged pricing for one model, in USD per token.
+ *
+ * The backend fills this from the same catalogue the billing engine uses, so
+ * what the page prints is what the user is really charged — no copy to drift.
+ */
+export interface PlazaPricing {
+  billing_mode?: BillingMode | string
+  input_price?: number | null
+  output_price?: number | null
+  per_request_price?: number | null
+}
+
 export interface PlazaModel {
   name?: string
   platform?: string
+  pricing?: PlazaPricing | null
 }
 
 export interface PlazaGroup {
@@ -259,7 +276,12 @@ export interface PlazaGroup {
   description?: string
   platform?: string
   rate_multiplier?: number
+  /** 'standard' | 'subscription' — subscription groups bill against a plan. */
+  subscription_type?: string
   is_exclusive?: boolean
+  /** Peak-hour surcharge: active only when enabled and the multiplier differs. */
+  peak_rate_enabled?: boolean
+  peak_rate_multiplier?: number
   models?: PlazaModel[]
 }
 
