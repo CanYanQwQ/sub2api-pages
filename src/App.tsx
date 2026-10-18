@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { InstanceContext } from './components/InstanceContext'
 import type { InstanceState } from './components/InstanceContext'
 import { ThemeProvider } from './components/ThemeContext'
@@ -13,7 +13,14 @@ import QuickStart from './components/sections/QuickStart'
 import Upstreams from './components/sections/Upstreams'
 import CallToAction from './components/sections/CallToAction'
 import { detectLang, resolveConfig } from './lib/config'
-import { buildLinks, detectEmbedderOrigin, isEmbedded, loadPublicSettings } from './lib/instance'
+import {
+  buildLinks,
+  detectEmbedderOrigin,
+  isEmbedded,
+  prefetchPublicSettings,
+  readSettingsCache,
+  writeSettingsCache,
+} from './lib/instance'
 import type { PublicSettings } from './lib/instance'
 
 /**
@@ -31,10 +38,23 @@ export default function App() {
 
   const [base, setBase] = useState(() => config.apiBase || detectEmbedderOrigin())
   const [embedded] = useState(() => isEmbedded())
-  const [settings, setSettings] = useState<PublicSettings | null>(null)
-  const [status, setStatus] = useState<InstanceState['status']>(() =>
-    config.apiBase || detectEmbedderOrigin() ? 'connecting' : 'preview',
-  )
+  // Hydrate synchronously from the previous payload. Without this the first
+  // frame renders the shipped defaults and then swaps to the instance's own
+  // branding a second later — the classic async-hydration flash.
+  const hydrated = useRef(false)
+  const [settings, setSettings] = useState<PublicSettings | null>(() => {
+    if (!config.live) return null
+    const cached = readSettingsCache(config.apiBase || detectEmbedderOrigin())
+    hydrated.current = cached !== null
+    return cached
+  })
+  const [status, setStatus] = useState<InstanceState['status']>(() => {
+    if (!base) return 'preview'
+    // `?live=0` never fetches, so 'connecting' would strand the conditional
+    // nav entries in their pending state forever.
+    if (!config.live) return 'detected'
+    return hydrated.current ? 'live' : 'connecting'
+  })
 
   useEffect(() => {
     // Sub2API may finish loading the frame before document.referrer settles in
@@ -44,7 +64,7 @@ export default function App() {
       const referrer = detectEmbedderOrigin()
       if (referrer) {
         setBase(referrer)
-        setStatus('connecting')
+        setStatus(hydrated.current ? 'live' : 'connecting')
       }
     }, 300)
     return () => window.clearTimeout(timer)
@@ -56,17 +76,25 @@ export default function App() {
       return
     }
     let cancelled = false
-    setStatus('connecting')
-    loadPublicSettings(base).then((loaded) => {
+    // Revalidate silently when a cached payload is already on screen: going
+    // back to "connecting" would make a correct page look like it is reloading.
+    if (!hydrated.current) setStatus('connecting')
+    prefetchPublicSettings(base).then((loaded) => {
       if (cancelled) return
       if (loaded) {
         setSettings(loaded)
+        writeSettingsCache(base, loaded)
+        hydrated.current = true
         setStatus('live')
-      } else {
+        return
+      }
+      if (!hydrated.current) {
         // CORS blocked or instance unreachable — keep the origin (links still
         // work) but fall back to the shipped copy.
         setStatus('detected')
       }
+      // With a cached payload the last known truth is still the best we have,
+      // so the page stays exactly as it is instead of degrading.
     })
     return () => {
       cancelled = true

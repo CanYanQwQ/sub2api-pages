@@ -15,6 +15,8 @@
 
 export type ThemeMode = 'light' | 'dark' | 'auto'
 export type LangCode = 'zh' | 'en' | 'ja'
+/** `auto` follows the instance's own purchase switches; `always` pins the link on. */
+export type PricingMode = 'auto' | 'always'
 
 export interface HomeConfig {
   /** Absolute origin of the Sub2API instance, e.g. https://api.example.com. '' when unknown. */
@@ -28,6 +30,13 @@ export interface HomeConfig {
   contactUrl: string
   /** When false, no network request is attempted (fully static page). */
   live: boolean
+  /**
+   * Whether the "pricing" nav entry is gated on the instance's purchase
+   * switches. 0.2.17 hides the buy-subscription flow by default
+   * (`purchase_subscription_enabled` is a plain bool, so an unconfigured
+   * instance reports `false`), which would otherwise hide the entry.
+   */
+  showPricing: PricingMode
 }
 
 export const DEFAULT_REPO_URL = 'https://github.com/Wei-Shaw/sub2api'
@@ -103,6 +112,10 @@ export function resolveConfig(): HomeConfig {
     repoUrl: first(query.get('repo'), injected?.repoUrl, env.VITE_REPO_URL, DEFAULT_REPO_URL),
     contactUrl: first(query.get('contact'), injected?.contactUrl, env.VITE_CONTACT_URL),
     live: query.get('live') === '0' ? false : (injected?.live ?? true),
+    showPricing:
+      first(query.get('pricing'), env.VITE_SHOW_PRICING).toLowerCase() === 'always'
+        ? 'always'
+        : 'auto',
   }
 }
 

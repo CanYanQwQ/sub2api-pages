@@ -180,6 +180,8 @@ cors:
 | `?lang=` | `zh` / `en` / `ja` | 强制语言，并隐藏语言切换按钮 |
 | `?api=` | 实例 origin | 覆盖自动推导的实例地址 |
 | `?live=0` | `0` | 关闭所有网络请求，纯静态渲染 |
+| `?pricing=` | `auto` / `always` | 「价格」入口是否跟随实例的购买开关 |
+| `?site=` | 任意文本 | 兜底站点名，冷启动首帧就用它，避免先显示通用名 |
 
 例：
 
@@ -201,6 +203,19 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | `VITE_DOCS_URL` | 文档地址；0.2.17 没有 `/docs` 路由，留空则回退到仓库地址 |
 | `VITE_REPO_URL` | 仓库地址，页脚「Build」栏展示 |
 | `VITE_CONTACT_URL` | 联系方式地址 |
+| `VITE_SHOW_PRICING` | `auto`（默认）跟随实例购买开关；`always` 强制显示「价格」 |
+
+---
+
+## 加载策略：为什么刷新时不会再闪一下
+
+首页内容是通过 `/api/v1/settings/public` 拿到站点名、版本号和导航开关的，这是一次网络往返。如果首帧直接渲染，就会先出现兜底文案，等数据到了再「变」成你的站点——这就是闪烁。三层处理：
+
+1. **同步缓存**。每次成功读取后把 payload 存进 `localStorage`（按实例 origin 分键，7 天 TTL）。刷新时在 `useState` 初始化函数里同步读出来，首帧就是最终状态。
+2. **请求提前**。`main.tsx` 在 `createRoot` 之前就发起请求，让网络往返与 React 首屏渲染重叠，而不是渲染完再发。
+3. **三态门控**。依赖设置项的导航（「模型广场」「价格」）在数据未到时返回 `pending`：位置留着但不显示，所以既不会先冒出来再消失，也不会引起布局跳动。
+
+代价只有一处：**从未访问过的设备首次打开**时还没有缓存可用，那一帧会短暂显示兜底站点名（约等于一次接口往返）。这是客户端取数的固有延迟。想连这一帧也消除，在首页内容地址里加上 `?site=你的站点名`。
 
 ---
 
@@ -297,6 +312,32 @@ npx serve . -l 5000   # 然后访问 http://localhost:5000/parent.html
 
 检查「首页内容」填的是不是完整的 `https://` 地址。父站的 CSP `frame-src`
 依赖这个 URL 的 origin，填相对路径或不带协议会被当成 HTML 内容而不是 iframe。
+
+</details>
+
+<details>
+<summary><b>顶部导航里没有「价格」</b></summary>
+
+`/purchase` 路由带 `requiresPayment` 守卫，所以入口是否显示取决于实例自己的开关。
+0.2.17 的 `purchase_subscription_enabled`、`payment_enabled`、`subscription_enabled`
+都是普通 `bool` 且没有 `omitempty`，**从未配置过的实例三项都返回 `false`** —— 这时隐藏
+入口是刻意的，否则点进去会被弹回 `/dashboard`。
+
+想让它常驻，二选一：
+
+- 后台开启「购买订阅」/ 支付，并设置 `purchase_subscription_url` 或 `/purchase` 页；
+- 或者不管实例设置，在首页内容里加 `?pricing=always`（构建期可用 `VITE_SHOW_PRICING=always`）。
+
+</details>
+
+<details>
+<summary><b>刷新时先闪一下默认内容，然后才变成我的站点</b></summary>
+
+以前是因为设置接口在首帧之后才发请求。现在做了同步缓存 + 预取 + 三态门控，刷新时
+首帧即最终状态（见 [加载策略](#加载策略为什么刷新时不会再闪一下)）。
+
+如果换一台从未访问过的设备仍能看到短促的兜底文案，那是没有缓存可用，属客户端取数
+的固有延迟；在首页内容里加 `?site=你的站点名` 可以让那一帧也直接正确。
 
 </details>
 

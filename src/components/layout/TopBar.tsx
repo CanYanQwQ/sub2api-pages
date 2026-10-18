@@ -5,13 +5,15 @@ import { useInstance } from '../InstanceContext'
 import { useTheme } from '../ThemeContext'
 import { LANG_LABELS, useI18n } from '../../i18n'
 import type { LangCode } from '../../i18n'
-import { purchaseVisible, visibleMenuItems } from '../../lib/instance'
+import { plazaVisibility, purchaseVisibility, visibleMenuItems } from '../../lib/instance'
 import { cn } from '../../lib/cn'
 
 interface NavItem {
   key: string
   label: string
   href: string
+  /** Slot reserved while the settings payload is still in flight. */
+  pending?: boolean
 }
 
 /**
@@ -46,12 +48,19 @@ export default function TopBar() {
 
   const siteName = settings?.site_name?.trim() || config.siteName || t.fallback.brand
 
+  // `connecting` is the only state where we are about to learn something that
+  // can change the nav, so conditional entries are held back visually instead
+  // of appearing and then vanishing.
+  const resolving = status === 'connecting'
+  const plaza = plazaVisibility(settings, resolving)
+  const pricing = purchaseVisibility(settings, resolving, config.showPricing)
+
   const nav: NavItem[] = [{ key: 'docs', label: t.nav.docs, href: links.docs }]
-  if (settings?.model_plaza_enabled !== false) {
-    nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza })
+  if (plaza !== 'hide') {
+    nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }
-  if (purchaseVisible(settings)) {
-    nav.push({ key: 'pricing', label: t.nav.pricing, href: links.topup })
+  if (pricing !== 'hide') {
+    nav.push({ key: 'pricing', label: t.nav.pricing, href: links.topup, pending: pricing === 'pending' })
   }
   for (const item of visibleMenuItems(settings)) {
     nav.push({ key: `custom-${item.id ?? item.label}`, label: item.label ?? '', href: item.url ?? '' })
@@ -97,7 +106,11 @@ export default function TopBar() {
                 key={item.key}
                 href={item.href}
                 target="_top"
-                className="rounded-sm px-2.5 py-1.5 text-[13.5px] text-ink-2 transition-colors duration-150 hover:bg-surface hover:text-ink"
+                aria-hidden={item.pending || undefined}
+                className={cn(
+                  'rounded-sm px-2.5 py-1.5 text-[13.5px] text-ink-2 transition-colors duration-150 hover:bg-surface hover:text-ink',
+                  item.pending && 'invisible',
+                )}
               >
                 {item.label}
               </a>
@@ -167,16 +180,20 @@ export default function TopBar() {
       >
         <Container className="py-4">
           <nav className="flex flex-col" aria-label="Primary mobile">
-            {nav.map((item) => (
-              <a
-                key={item.key}
-                href={item.href}
-                target="_top"
-                className="border-b border-line py-3 text-[15px] text-ink-2 transition-colors duration-150 hover:text-ink"
-              >
-                {item.label}
-              </a>
-            ))}
+            {/* A reserved-but-empty row would read as a broken list here, so
+                pending entries are left out of the sheet instead. */}
+            {nav
+              .filter((item) => !item.pending)
+              .map((item) => (
+                <a
+                  key={item.key}
+                  href={item.href}
+                  target="_top"
+                  className="border-b border-line py-3 text-[15px] text-ink-2 transition-colors duration-150 hover:text-ink"
+                >
+                  {item.label}
+                </a>
+              ))}
           </nav>
           {base ? (
             <div className="mt-4 flex items-center gap-2">

@@ -138,12 +138,108 @@ export function buildLinks(
   }
 }
 
-/** `payment` gates the purchase page; without it the nav item would dead-end. */
-export function purchaseVisible(settings: PublicSettings | null): boolean {
-  if (!settings) return true
-  if (settings.purchase_subscription_enabled === false) return false
-  if (settings.payment_enabled === false && settings.subscription_enabled === false) return false
-  return true
+/* ---------------------------------------------------------------------- */
+/* Settings cache                                                          */
+/* ---------------------------------------------------------------------- */
+
+/**
+ * The public settings payload is what turns this page from the shipped
+ * defaults into the operator's own site: name, logo, version, nav entries.
+ *
+ * Reading it costs one network round trip, so painting before it arrives
+ * means painting the wrong page and then visibly swapping to the right one —
+ * and, worse, dropping nav entries the instance has switched off. Persisting
+ * the last good payload lets a reload paint the correct page on the very
+ * first frame while the request revalidates in the background.
+ */
+const CACHE_KEY = 'sub2api-home:public-settings'
+const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000
+
+interface SettingsCache {
+  origin: string
+  savedAt: number
+  data: PublicSettings
+}
+
+/** Last payload seen for this origin, or null when absent/expired/unreadable. */
+export function readSettingsCache(base: string): PublicSettings | null {
+  if (!base || typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as SettingsCache
+    if (parsed?.origin !== base) return null
+    if (typeof parsed.savedAt !== 'number' || Date.now() - parsed.savedAt > CACHE_TTL_MS) return null
+    if (!parsed.data || typeof parsed.data !== 'object') return null
+    return parsed.data
+  } catch {
+    return null
+  }
+}
+
+export function writeSettingsCache(base: string, data: PublicSettings): void {
+  if (!base || typeof window === 'undefined') return
+  try {
+    const payload: SettingsCache = { origin: base, savedAt: Date.now(), data }
+    window.localStorage.setItem(CACHE_KEY, JSON.stringify(payload))
+  } catch {
+    // Private mode or a full quota — the cache is an optimisation, never a dependency.
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Single-flight request                                                   */
+/* ---------------------------------------------------------------------- */
+
+const inflight = new Map<string, Promise<PublicSettings | null>>()
+
+/**
+ * One request per origin per page load. `main.tsx` calls this before React
+ * mounts so the fetch overlaps the first render instead of starting after it;
+ * `App` then awaits the same promise rather than issuing a duplicate.
+ */
+export function prefetchPublicSettings(base: string): Promise<PublicSettings | null> {
+  if (!base) return Promise.resolve(null)
+  const existing = inflight.get(base)
+  if (existing) return existing
+  const request = loadPublicSettings(base)
+  inflight.set(base, request)
+  return request
+}
+
+/* ---------------------------------------------------------------------- */
+/* Conditional nav entries                                                 */
+/* ---------------------------------------------------------------------- */
+
+/** `pending` means "not known yet" — the slot is reserved but not painted. */
+export type Visibility = 'show' | 'hide' | 'pending'
+
+/**
+ * Whether the "pricing" entry should appear.
+ *
+ * 0.2.17 exposes three relevant switches: `purchase_subscription_enabled`
+ * (opt-out for the buy-subscription flow), `payment_enabled` and
+ * `subscription_enabled`. All three are plain bools, so an instance that never
+ * configured them reports `false` — and `/purchase` is guarded by
+ * `requiresPayment`, which bounces straight back to /dashboard. Linking there
+ * with checkout switched off would be a dead end.
+ */
+export function purchaseVisibility(
+  settings: PublicSettings | null,
+  resolving: boolean,
+  mode: 'auto' | 'always' = 'auto',
+): Visibility {
+  if (mode === 'always') return 'show'
+  if (!settings) return resolving ? 'pending' : 'show'
+  if (settings.purchase_subscription_enabled === false) return 'hide'
+  if (settings.payment_enabled === false && settings.subscription_enabled === false) return 'hide'
+  return 'show'
+}
+
+/** `model_plaza_enabled` is opt-out: only an explicit `false` hides the entry. */
+export function plazaVisibility(settings: PublicSettings | null, resolving: boolean): Visibility {
+  if (!settings) return resolving ? 'pending' : 'show'
+  return settings.model_plaza_enabled === false ? 'hide' : 'show'
 }
 
 /** Only user-visible custom menu entries are shown; admin ones need a JWT we never have. */
