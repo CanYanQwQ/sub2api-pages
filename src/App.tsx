@@ -19,6 +19,7 @@ import {
   isEmbedded,
   prefetchPublicSettings,
   readSettingsCache,
+  resolveSiteLogo,
   writeSettingsCache,
 } from './lib/instance'
 import type { PublicSettings } from './lib/instance'
@@ -102,10 +103,11 @@ export default function App() {
   }, [base, config.live])
 
   const links = useMemo(() => buildLinks(base, settings, config.docsUrl), [base, settings, config.docsUrl])
+  const logo = useMemo(() => resolveSiteLogo(settings, base), [settings, base])
 
   const instance = useMemo<InstanceState>(
-    () => ({ config, base, embedded, status, settings, links }),
-    [config, base, embedded, status, settings, links],
+    () => ({ config, base, embedded, status, settings, links, logo }),
+    [config, base, embedded, status, settings, links, logo],
   )
 
   const initialLang = useMemo(() => detectLang(config), [config])

@@ -20,6 +20,8 @@ export interface InstanceState {
   status: 'connecting' | 'detected' | 'live' | 'preview'
   settings: PublicSettings | null
   links: InstanceLinks
+  /** Sanitized `site_logo`, or '' when the instance has none we can render. */
+  logo: string
 }
 
 export const InstanceContext = createContext<InstanceState | null>(null)

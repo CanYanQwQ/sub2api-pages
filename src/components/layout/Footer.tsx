@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
-import { BrandMark, Container } from '../ui'
+import { Container, SiteMark } from '../ui'
 import { useInstance } from '../InstanceContext'
 import { useI18n } from '../../i18n'
 import { visibleMenuItems } from '../../lib/instance'
@@ -13,7 +13,7 @@ import { visibleMenuItems } from '../../lib/instance'
  */
 export default function Footer() {
   const { t } = useI18n()
-  const { config, settings, links, base } = useInstance()
+  const { config, settings, links, base, logo } = useInstance()
 
   const siteName = settings?.site_name?.trim() || config.siteName || t.fallback.brand
   const version = settings?.version
@@ -41,7 +41,7 @@ export default function Footer() {
           <div className="max-w-[34ch]">
             <div className="flex items-center gap-2.5">
               <span className="text-brand">
-                <BrandMark size={24} />
+                <SiteMark logoUrl={logo} size={26} />
               </span>
               <span className="text-[15px] font-semibold tracking-tight text-ink">{siteName}</span>
             </div>

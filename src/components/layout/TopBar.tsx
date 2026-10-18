@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, ChevronDown, Globe, Menu, Moon, Sun, X } from 'lucide-react'
-import { BrandMark, ButtonLink, Container, buttonClass } from '../ui'
+import { ButtonLink, Container, SiteMark, buttonClass } from '../ui'
 import { useInstance } from '../InstanceContext'
 import { useTheme } from '../ThemeContext'
 import { LANG_LABELS, useI18n } from '../../i18n'
@@ -26,7 +26,7 @@ interface NavItem {
 export default function TopBar() {
   const { t, lang, setLang, lockLang } = useI18n()
   const { mode, isDark, toggle } = useTheme()
-  const { config, status, settings, links, base } = useInstance()
+  const { config, status, settings, links, base, logo } = useInstance()
 
   const [open, setOpen] = useState(false)
   const [elevated, setElevated] = useState(false)
@@ -89,7 +89,7 @@ export default function TopBar() {
             aria-label={siteName}
           >
             <span className="text-brand transition-colors duration-150 group-hover:text-brand-ink">
-              <BrandMark size={26} />
+              <SiteMark logoUrl={logo} size={28} />
             </span>
             <span className="truncate text-[15px] font-semibold tracking-tight text-ink">
               {siteName}

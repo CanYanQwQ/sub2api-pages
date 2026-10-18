@@ -139,6 +139,33 @@ export function buildLinks(
   }
 }
 
+/**
+ * The operator's own logo, ready to drop into an `<img src>`.
+ *
+ * Mirrors 0.2.17's `sanitizeUrl(value, { allowRelative: true, allowDataUrl: true })`
+ * (frontend/src/utils/url.ts), which is what the instance itself feeds to the
+ * logo `<img>`: `data:image/...` URIs, absolute http(s) URLs and site-relative
+ * paths are accepted, everything else is dropped. 0.2.17 renders the result
+ * same-origin, so a relative path resolves against the instance for free; this
+ * page is served from a different host, so a relative path is rebased onto the
+ * instance origin explicitly.
+ *
+ * Returning '' makes the caller fall back to the built-in mark.
+ */
+export function resolveSiteLogo(settings: PublicSettings | null, base: string): string {
+  const raw = settings?.site_logo?.trim()
+  if (!raw) return ''
+  if (raw.startsWith('/') && !raw.startsWith('//')) return `${base}${raw}`
+  if (raw.startsWith('data:image/')) return raw
+  if (!/^https?:\/\//i.test(raw)) return ''
+  try {
+    const url = new URL(raw)
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : ''
+  } catch {
+    return ''
+  }
+}
+
 /* ---------------------------------------------------------------------- */
 /* Settings cache                                                          */
 /* ---------------------------------------------------------------------- */
