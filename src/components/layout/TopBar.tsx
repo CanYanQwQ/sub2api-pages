@@ -7,7 +7,6 @@ import { LANG_LABELS, useI18n } from '../../i18n'
 import type { LangCode } from '../../i18n'
 import { plazaVisibility, purchaseVisibility, visibleMenuItems } from '../../lib/instance'
 import { cn } from '../../lib/cn'
-import { overlayClick, usePriceOverlay } from '../PriceOverlay'
 
 interface NavItem {
   key: string
@@ -17,8 +16,6 @@ interface NavItem {
   pending?: boolean
   /** A different origin: opens in its own tab instead of navigating the frame. */
   external?: boolean
-  /** Opens the in-page price surface instead of navigating. */
-  overlay?: boolean
 }
 
 /**
@@ -36,7 +33,6 @@ export default function TopBar() {
   const [open, setOpen] = useState(false)
   const [elevated, setElevated] = useState(false)
   const [progress, setProgress] = useState(0)
-  const { open: openPrice } = usePriceOverlay()
 
   useEffect(() => {
     const onScroll = () => {
@@ -77,12 +73,6 @@ export default function TopBar() {
   if (plaza !== 'hide') {
     nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }
-  // The price sheet is a separate deployment, so it is pinned rather than gated
-  // on an instance setting. It sits next to the plaza on purpose: both answer
-  // "what does this cost", so they read as one pair. Clicking it opens the sheet
-  // in place; the href stays a real URL so ⌘/Ctrl-click and the middle button
-  // keep their native meaning.
-  nav.push({ key: 'price', label: t.nav.pricing, href: links.pricing, overlay: true })
   if (pricing !== 'hide') {
     nav.push({ key: 'topup', label: t.nav.topup, href: links.topup, pending: pricing === 'pending' })
   }
@@ -129,10 +119,8 @@ export default function TopBar() {
               <a
                 key={item.key}
                 href={item.href}
-                target={item.external || item.overlay ? '_blank' : '_top'}
-                rel={item.external || item.overlay ? 'noreferrer noopener' : undefined}
-                onClick={item.overlay ? overlayClick(openPrice) : undefined}
-                aria-haspopup={item.overlay ? 'dialog' : undefined}
+                target={item.external ? '_blank' : '_top'}
+                rel={item.external ? 'noreferrer noopener' : undefined}
                 aria-hidden={item.pending || undefined}
                 className={cn(
                   'inline-flex items-center gap-1 rounded-sm px-2.5 py-1.5 text-[13.5px] text-ink-2 transition-colors duration-150 hover:bg-surface hover:text-ink',
@@ -232,17 +220,8 @@ export default function TopBar() {
                 <a
                   key={item.key}
                   href={item.href}
-                  target={item.external || item.overlay ? '_blank' : '_top'}
-                  rel={item.external || item.overlay ? 'noreferrer noopener' : undefined}
-                  aria-haspopup={item.overlay ? 'dialog' : undefined}
-                  onClick={
-                    item.overlay
-                      ? (event) => {
-                          overlayClick(openPrice)(event)
-                          setOpen(false)
-                        }
-                      : undefined
-                  }
+                  target={item.external ? '_blank' : '_top'}
+                  rel={item.external ? 'noreferrer noopener' : undefined}
                   className="flex items-center gap-1.5 border-b border-line py-3 text-[15px] text-ink-2 transition-colors duration-150 hover:text-ink"
                 >
                   {item.label}
