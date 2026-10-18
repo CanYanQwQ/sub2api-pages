@@ -145,6 +145,18 @@
     outline-offset: 2px;
   }
 
+  /* Some browsers paint a default ring on :focus too, which reads as a stray
+     blue box on elements focused by script. Keep it only for :focus-visible. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Focus handed back by a closing panel is the program moving the caret, not
+     the reader navigating — hold the ring until the next Tab asks for it. */
+  [data-quiet-focus]:focus-visible {
+    outline: none;
+  }
+
   h1,
   h2,
   h3,

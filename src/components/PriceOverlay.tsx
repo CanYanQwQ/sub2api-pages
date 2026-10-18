@@ -37,6 +37,24 @@ function originOf(base: string): string {
   }
 }
 
+/**
+ * Hand focus back to whatever opened the sheet, without painting a focus ring.
+ * Browsers treat script-initiated focus after a key press as keyboard
+ * navigation, so Escape left a box on the trigger that the reader never asked
+ * for. The ring is released again on the next Tab, which is a real choice.
+ */
+function returnQuietly(target: HTMLElement | null): void {
+  if (!target) return
+  target.focus({ preventScroll: true })
+  target.setAttribute('data-quiet-focus', '')
+  const release = (event: KeyboardEvent) => {
+    if (event.key !== 'Tab') return
+    target.removeAttribute('data-quiet-focus')
+    window.removeEventListener('keydown', release)
+  }
+  window.addEventListener('keydown', release)
+}
+
 /** `embed=1` tells the sheet to drop its own header — this overlay is the header. */
 function embedUrl(base: string, dark: boolean): string {
   try {
@@ -54,7 +72,7 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
   const { isDark } = useTheme()
   const [open, setOpen] = useState(false)
   const [loaded, setLoaded] = useState(false)
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const restoreFocus = useRef<HTMLElement | null>(null)
 
   const show = useCallback(() => {
@@ -72,7 +90,7 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
 
   const hide = useCallback(() => {
     setOpen(false)
-    restoreFocus.current?.focus()
+    returnQuietly(restoreFocus.current)
     restoreFocus.current = null
     // Drop the entry we added, so the history stack does not grow every open.
     if (isOverlayEntry()) window.history.back()
@@ -84,7 +102,7 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
     if (!open) return
     const onPop = () => {
       setOpen(false)
-      restoreFocus.current?.focus()
+      returnQuietly(restoreFocus.current)
       restoreFocus.current = null
     }
     window.addEventListener('popstate', onPop)
@@ -121,7 +139,10 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
     if (!open) return
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    closeRef.current?.focus()
+    // Focus the panel, not the close button: a dialog should be announced as a
+    // dialog, and focusing the X painted a focus ring in its corner the moment
+    // the sheet opened.
+    dialogRef.current?.focus({ preventScroll: true })
     return () => {
       document.body.style.overflow = previous
     }
@@ -147,10 +168,12 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
 
       {open ? (
         <div
+          ref={dialogRef}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-label={t.price.title}
-          className="overlay-in fixed inset-0 z-50 flex flex-col bg-canvas"
+          className="overlay-in fixed inset-0 z-50 flex flex-col bg-canvas outline-none"
         >
           <div className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-line px-4 sm:px-6">
             <div className="flex min-w-0 items-center gap-2">
@@ -172,7 +195,6 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
                 <ArrowUpRight size={12} strokeWidth={2} aria-hidden="true" className="text-ink-3" />
               </a>
               <button
-                ref={closeRef}
                 type="button"
                 onClick={hide}
                 aria-label={t.price.close}
