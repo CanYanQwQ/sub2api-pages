@@ -69,16 +69,14 @@ export default function TopBar() {
   const plaza = plazaVisibility(settings, resolving)
   const pricing = purchaseVisibility(settings, resolving, config.showPricing)
 
-  // No docs entry: the instance's own docs link is often unset, and when it is
-  // it points at upstream's GitHub. The footer still carries it for anyone who
-  // wants the source.
+  // No docs or price entry up here: the docs link usually resolves to upstream's
+  // GitHub, and the price sheet is a separate deployment the instance does not
+  // know about. Both are still one click away in the footer, which is where a
+  // reader looks for off-site destinations anyway.
   const nav: NavItem[] = []
   if (plaza !== 'hide') {
     nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }
-  // The price sheet is a separate deployment, so it is pinned rather than gated
-  // on an instance setting.
-  nav.push({ key: 'price', label: t.nav.pricing, href: links.pricing, external: true })
   if (pricing !== 'hide') {
     nav.push({ key: 'topup', label: t.nav.topup, href: links.topup, pending: pricing === 'pending' })
   }
