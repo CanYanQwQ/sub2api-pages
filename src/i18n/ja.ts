@@ -140,4 +140,10 @@ export const ja: Dict = {
     brand: 'Sub2API',
     tagline: '統合 AI ゲートウェイ',
   },
+  price: {
+    title: '料金',
+    newTab: '新しいタブで開く',
+    close: '閉じる',
+    loading: '料金表を読み込み中',
+  },
 }

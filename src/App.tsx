@@ -12,6 +12,7 @@ import Capabilities from './components/sections/Capabilities'
 import Flow from './components/sections/Flow'
 import QuickStart from './components/sections/QuickStart'
 import Upstreams from './components/sections/Upstreams'
+import { PriceOverlayProvider } from './components/PriceOverlay'
 import { detectLang, resolveConfig } from './lib/config'
 import {
   buildLinks,
@@ -131,18 +132,20 @@ export default function App() {
     <InstanceContext.Provider value={instance}>
       <ThemeProvider initialMode={config.theme}>
         <I18nProvider initialLang={initialLang} lockLang={lockLang}>
-          <div className="flex min-h-screen flex-col bg-canvas">
-            <TopBar />
-            <main className="flex-1">
-              <Hero />
-              <Protocols />
-              <Capabilities />
-              <Flow />
-              <QuickStart />
-              <Upstreams />
-            </main>
-            <Footer />
-          </div>
+          <PriceOverlayProvider url={links.pricing}>
+            <div className="flex min-h-screen flex-col bg-canvas">
+              <TopBar />
+              <main className="flex-1">
+                <Hero />
+                <Protocols />
+                <Capabilities />
+                <Flow />
+                <QuickStart />
+                <Upstreams />
+              </main>
+              <Footer />
+            </div>
+          </PriceOverlayProvider>
         </I18nProvider>
       </ThemeProvider>
     </InstanceContext.Provider>

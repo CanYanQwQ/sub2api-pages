@@ -474,6 +474,24 @@ details[open] .faq-body {
   animation: faq-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* The price overlay arrives as a surface, not a dialog card: it covers the
+   viewport and rises 8px. No scale, no backdrop blur — those read as a web-app
+   modal, and this page has no modal vocabulary anywhere else. */
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility overlay-in {
+  animation: overlay-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @utility wire-flow {
   stroke-dasharray: 3 13;
   animation: dash-flow 1.5s linear infinite;
@@ -486,6 +504,7 @@ details[open] .faq-body {
   .fade-in-late,
   .bracket-in,
   .rule-draw,
+  .overlay-in,
   .lattice-drift,
   .spin-slow,
   .core-pulse {

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
@@ -78,6 +78,8 @@ export interface ButtonLinkProps extends Omit<ButtonProps, 'type' | 'disabled' |
   href: string
   /** Sub2API embeds us in an iframe, so internal links must escape the frame. */
   external?: boolean
+  /** Lets a caller intercept the click while keeping the href as a fallback. */
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void
 }
 
 export function ButtonLink({
@@ -90,6 +92,7 @@ export function ButtonLink({
   iconRight,
   external,
   ariaLabel,
+  onClick,
 }: ButtonLinkProps) {
   const isHttp = /^https?:/i.test(href)
   const target = isHttp || external ? '_blank' : '_top'
@@ -99,6 +102,7 @@ export function ButtonLink({
       target={target}
       rel={target === '_blank' ? 'noreferrer noopener' : undefined}
       aria-label={ariaLabel}
+      onClick={onClick}
       className={buttonClass(variant, size, className)}
     >
       {icon}

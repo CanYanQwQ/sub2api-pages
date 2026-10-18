@@ -139,6 +139,12 @@ export const zh = {
     brand: 'Sub2API',
     tagline: '统一 AI 接口网关',
   },
+  price: {
+    title: '价格',
+    newTab: '新标签打开',
+    close: '关闭',
+    loading: '正在载入价目表',
+  },
 }
 
 /** Every locale must satisfy exactly this shape. */

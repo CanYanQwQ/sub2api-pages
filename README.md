@@ -255,7 +255,28 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
 | 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL），前面不加小标签。没有配置时不显示这一块 |
 | 首屏规格条：3 种 / 15 家 / 3 个 / v0.2.17 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值。每个数字都带量词和一句说明，避免四个光秃秃的整数并排却读不出在数什么 |
-| 导航与首屏的「价格」 | **不属于实例**：价目表是独立部署（默认 `https://model.zhouwanx.top/`），0.2.17 里没有任何设置项指向它，所以地址硬编码在 `VITE_PRICING_URL` / `?price=`。它是唯一在实例未就绪时也照常显示的入口，因为它不依赖任何实例数据 |
+| 导航与首屏的「价格」 | **不属于实例**：价目表是独立部署（默认 `https://model.zhouwanx.top/`），0.2.17 里没有任何设置项指向它，所以地址硬编码在 `VITE_PRICING_URL` / `?price=`。它是唯一在实例未就绪时也照常显示的入口，因为它不依赖任何实例数据。点击后在**本页整屏浮层**里打开，不跳转、不开新标签，见下节 |
+
+### 价格页为什么是一个浮层
+
+三条路各试了一遍，只有第三条能走通：
+
+| 做法 | 结果 |
+| --- | --- |
+| `target="_top"` 整页跳转 | **被父站 CSP 拒绝**。0.2.17 的 `GetFrameSrcOrigins` 从 `home_content` 提取 origin 生成 `frame-src`，父站只允许框住本页这一个 origin；本页把顶层导航到价目表，等于让父站去框一个不在白名单里的地址，控制台直接报 `Framing ... violates ... frame-src` |
+| `target="_blank"` 新标签 | 能用，但用户明确要求「在中转站内部套跳转，不开新标签」 |
+| 本页自己再套一层 iframe | **可行**。CSP 是逐文档生效的，父站的 `frame-src` 只约束它自己创建的 frame，管不到本页创建的嵌套 frame |
+
+所以 `src/components/PriceOverlay.tsx` 渲染一层 `fixed inset-0` 的浮层，里面是价目表的
+iframe。浮层自己提供标题栏和关闭按钮，价目表用 `?embed=1` 收起自己的顶栏，避免两层导航
+叠在一起（见价目表仓库的 README）。
+
+几个细节：
+
+- **锚点仍是真链接**。`href` 保留价目表地址，`⌘`/`Ctrl`/`Shift` 点击和中键不被拦截，照常开新标签；只有普通左键才 `preventDefault` 改成开浮层。
+- **主题跟着走**。浮层里的 iframe 读不到宿主的 `data-theme`，所以 `embedUrl()` 把当前主题拼进 `?theme=`。
+- **滚动锁在 `body` 上**，不是浮层上。浮层在本页的 iframe 里，锁自己只会冻住本 frame 的滚动条。
+- `Esc` 关闭，关闭后焦点回到触发它的那个链接。
 
 ---
 

@@ -140,4 +140,10 @@ export const en: Dict = {
     brand: 'Sub2API',
     tagline: 'Unified AI gateway',
   },
+  price: {
+    title: 'Pricing',
+    newTab: 'Open in a new tab',
+    close: 'Close',
+    loading: 'Loading the price sheet',
+  },
 }
