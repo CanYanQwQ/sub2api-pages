@@ -46,7 +46,7 @@ export function CopyButton({
         variant === 'inline'
           ? 'border border-line-strong bg-surface px-2.5 py-1.5 text-[12px] font-medium text-ink-2 hover:border-ink hover:text-ink'
           : 'h-8 w-8 justify-center text-ink-3 hover:text-ink',
-        copied && 'border-brand text-brand',
+        copied && 'border-brand text-brand-ink',
         className,
       )}
     >

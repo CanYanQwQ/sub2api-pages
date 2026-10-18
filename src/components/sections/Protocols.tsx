@@ -42,13 +42,13 @@ export default function Protocols() {
                   isFirst ? 'sm:pr-7' : isLast ? 'sm:pl-7' : 'sm:px-7',
                 )}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <Icon size={18} strokeWidth={1.75} className="text-ink-3" aria-hidden="true" />
-                  <span className="text-mono-label">{String(index + 1).padStart(2, '0')}</span>
-                </div>
+                {/* No index here on purpose: these three protocols are
+                    alternatives, not steps, so a 01/02/03 would be a number
+                    with nothing to count. */}
+                <Icon size={18} strokeWidth={1.75} className="text-ink-3" aria-hidden="true" />
 
                 <h3 className="mt-6 text-[15px] font-medium text-ink">{item.name}</h3>
-                <p className="mt-2 font-mono text-[13px] leading-snug text-brand">{item.path}</p>
+                <p className="mt-2 font-mono text-[13px] leading-snug text-brand-ink">{item.path}</p>
                 <p className="mt-3 text-[14px] leading-relaxed text-ink-2">{item.note}</p>
               </div>
             )

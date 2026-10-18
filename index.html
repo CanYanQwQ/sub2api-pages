@@ -7,6 +7,16 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>Sub2API</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Preloaded so the CJK display face is usually in place before the hero
+         headline paints: a swap on the largest type is the one flash worth
+         spending bytes to avoid. -->
+    <link
+      rel="preload"
+      href="/fonts/noto-sans-sc-display-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <script>
       // Resolve the colour scheme before first paint. The page lives inside a
       // cross-origin iframe, so it cannot read Sub2API's own theme class or

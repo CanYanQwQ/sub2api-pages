@@ -6,7 +6,7 @@ export const zh = {
   nav: {
     docs: '文档',
     plaza: '模型广场',
-    pricing: '价格',
+    topup: '充值',
     login: '登录',
     register: '注册',
     console: '控制台',

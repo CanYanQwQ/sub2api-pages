@@ -52,7 +52,7 @@ export default function Flow() {
                   className={cn(
                     'relative z-10 flex h-9 w-9 items-center justify-center rounded-xs border bg-canvas',
                     'font-mono text-[11px] tabular-nums',
-                    index === 0 ? 'border-line-strong text-brand' : 'border-line text-ink-2',
+                    index === 0 ? 'border-line-strong text-brand-ink' : 'border-line text-ink-2',
                   )}
                 >
                   {String(index + 1).padStart(2, '0')}

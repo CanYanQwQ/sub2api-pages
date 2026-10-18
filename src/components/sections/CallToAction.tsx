@@ -5,7 +5,7 @@ import { ButtonLink, Container, Section, SectionHeader } from '../ui'
 
 /**
  * Closing call to action. One bordered panel rather than a floating card: the
- * panel is part of the sheet, so it keeps a 1px hairline and a single 2px brand
+ * panel is part of the sheet, so it keeps a 1px hairline and a single 1px brand
  * rule on its left edge. The paper-grid texture is masked into the right half so
  * it reads as a drafting margin instead of wallpaper.
  */
@@ -25,7 +25,7 @@ export default function CallToAction() {
               WebkitMaskImage: 'linear-gradient(to left, #000 18%, transparent 88%)',
             }}
           />
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-0.5 bg-brand" />
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-px bg-brand" />
 
           <div className="relative p-8 sm:p-12 lg:p-14">
             <SectionHeader

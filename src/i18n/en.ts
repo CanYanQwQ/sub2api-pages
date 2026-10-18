@@ -8,7 +8,7 @@ export const en: Dict = {
   nav: {
     docs: 'Docs',
     plaza: 'Models',
-    pricing: 'Pricing',
+    topup: 'Top up',
     login: 'Sign in',
     register: 'Sign up',
     console: 'Console',

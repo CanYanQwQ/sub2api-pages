@@ -27,6 +27,7 @@
 - [页面内容与 0.2.17 的对应关系](#页面内容与-0217-的对应关系)
 - [设计约束](#设计约束)
 - [技术栈与目录](#技术栈与目录)
+- [字体子集](#字体子集)
 - [本地开发](#本地开发)
 - [常见问题](#常见问题)
 - [验证清单](#验证清单)
@@ -195,7 +196,7 @@ cors:
 | `?lang=` | `zh` / `en` / `ja` | 强制语言，并隐藏语言切换按钮 |
 | `?api=` | 实例 origin | 覆盖自动推导的实例地址 |
 | `?live=0` | `0` | 关闭所有网络请求，纯静态渲染 |
-| `?pricing=` | `auto` / `always` | 「价格」入口是否跟随实例的 `payment_enabled` |
+| `?pricing=` | `auto` / `always` | 「充值」入口是否跟随实例的 `payment_enabled` |
 | `?site=` | 任意文本 | 兜底站点名，冷启动首帧就用它，避免先显示通用名 |
 
 例：
@@ -218,7 +219,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | `VITE_DOCS_URL` | 文档地址；0.2.17 没有 `/docs` 路由，留空则回退到仓库地址 |
 | `VITE_REPO_URL` | 仓库地址，页脚「Build」栏展示 |
 | `VITE_CONTACT_URL` | 联系方式地址 |
-| `VITE_SHOW_PRICING` | `auto`（默认）跟随实例 `payment_enabled`；`always` 强制显示「价格」 |
+| `VITE_SHOW_PRICING` | `auto`（默认）跟随实例 `payment_enabled`；`always` 强制显示「充值」 |
 
 ---
 
@@ -228,7 +229,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 
 1. **同步缓存**。每次成功读取后把 payload 存进 `localStorage`（按实例 origin 分键，7 天 TTL）。刷新时在 `useState` 初始化函数里同步读出来，首帧就是最终状态。
 2. **请求提前**。`main.tsx` 在 `createRoot` 之前就发起请求，让网络往返与 React 首屏渲染重叠，而不是渲染完再发。
-3. **三态门控**。依赖设置项的导航（「模型广场」「价格」）在数据未到时返回 `pending`：位置留着但不显示，所以既不会先冒出来再消失，也不会引起布局跳动。
+3. **三态门控**。依赖设置项的导航（「模型广场」「充值」）在数据未到时返回 `pending`：位置留着但不显示，所以既不会先冒出来再消失，也不会引起布局跳动。
 
 代价只有一处：**从未访问过的设备首次打开**时还没有缓存可用，那一帧会短暂显示兜底站点名（约等于一次接口往返）。这是客户端取数的固有延迟。想连这一帧也消除，在首页内容地址里加上 `?site=你的站点名`。
 
@@ -262,7 +263,8 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 - **零阴影、零玻璃拟态。** 层次靠边框和背景色差，不靠投影。
 - **品牌色取自 Sub2API 自身的 teal**（`#14b8a6` 一系），与父站视觉连续。
 - **中文标题按语义断行。** 「变成」「还是」这类词不会在中间折行。
-- **字体自托管**（Archivo / IBM Plex Mono，走 `@fontsource`），不依赖 Google Fonts CDN。
+- **字体全部自托管**：Archivo（拉丁展示）与 IBM Plex Mono（等宽标注）走 `@fontsource`，
+  中文标题另用 Noto Sans SC 的子集（见下方「字体子集」），不依赖 Google Fonts CDN。
 
 ---
 
@@ -287,10 +289,32 @@ src/
   data/content.ts            上游平台等静态数据
   lib/                       config（URL 参数）、instance（实例探测与链接）、theme
   i18n/                      zh / en / ja 三套文案
+public/
+  fonts/                     中文展示字体子集与 OFL 授权
+scripts/
+  subset-font.py             重新生成上面那个子集
 docs/                        README 截图
 ```
 
-产物大小：JS gzip **约 87 kB**，全站含字体 **约 620 KB**。
+产物大小：JS gzip **约 88 kB**，全站含自托管字体 **约 725 KB**（其中中文子集 **87 kB**）。
+
+### 字体子集
+
+中文标题如果直接用系统字体（PingFang SC / 微软雅黑），笔画细节取决于访客的设备，而微软雅黑在 Windows 上字面偏大、字距偏紧，同一套版式在两台机器上会读出不同的「重量」。所以标题层额外用 **Noto Sans SC SemiBold** 的子集。
+
+完整的 Noto Sans SC 可变字体是 **17.7 MB**，不可能随页面发货。构建期按页面真实用到的字裁剪：
+
+```bash
+python scripts/subset-font.py   # 需要 fonttools 与 brotli
+```
+
+脚本从 `src/` 与 `index.html` 里收集所有落在 CJK 区段内的字符（当前 **446 个**），用 `pyftsubset` 裁出 `wght=600` 的静态字重，再压成 woff2，产物 **87 KB**。
+
+分工靠 `unicode-range`：CJK 码位走这个子集，其余字符仍由 Archivo 或系统字体渲染。因此：
+
+- 只作用于标题（`h1` / `h2`），正文与 UI 文本不换字体，避免整站字重变厚；
+- **改中文文案后要重跑一次脚本**，否则新增的字会退回系统字体——不会报错，只是字重不一致；
+- 授权是 SIL Open Font License 1.1，全文见 [`public/fonts/OFL.txt`](public/fonts/OFL.txt)。
 
 ---
 
@@ -332,7 +356,7 @@ npx serve . -l 5000   # 然后访问 http://localhost:5000/parent.html
 </details>
 
 <details>
-<summary><b>顶部导航里没有「价格」</b></summary>
+<summary><b>顶部导航里没有「充值」</b></summary>
 
 入口是否显示只看一个开关：`payment_enabled`。这和 0.2.17 完全一致 ——
 侧边栏里 `/purchase` 声明的是 `featureFlag: flagPayment`，而

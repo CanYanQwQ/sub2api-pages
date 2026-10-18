@@ -60,7 +60,7 @@ export default function TopBar() {
     nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }
   if (pricing !== 'hide') {
-    nav.push({ key: 'pricing', label: t.nav.pricing, href: links.topup, pending: pricing === 'pending' })
+    nav.push({ key: 'topup', label: t.nav.topup, href: links.topup, pending: pricing === 'pending' })
   }
   for (const item of visibleMenuItems(settings)) {
     nav.push({ key: `custom-${item.id ?? item.label}`, label: item.label ?? '', href: item.url ?? '' })

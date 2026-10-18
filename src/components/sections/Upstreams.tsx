@@ -25,7 +25,7 @@ export default function Upstreams() {
                 key={platform.id}
                 className="group flex min-h-16 items-center justify-between gap-3 bg-canvas px-4 py-3 transition-colors duration-150 hover:bg-surface"
               >
-                <span className="text-[14px] text-ink transition-colors duration-150 group-hover:text-brand">
+                <span className="text-[14px] text-ink transition-colors duration-150 group-hover:text-brand-ink">
                   {platform.label}
                 </span>
                 <span className="text-mono-label tabular-nums">

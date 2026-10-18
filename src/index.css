@@ -13,7 +13,7 @@
   --c-surface-2: #fafbfa;
   --c-ink: #0b1213;
   --c-ink-2: #45565a;
-  --c-ink-3: #75878a;
+  --c-ink-3: #5f7174;
   --c-line: #dce2e0;
   --c-line-strong: #c4cdca;
   --c-brand: #0e8c7f;
@@ -46,6 +46,25 @@
   --c-shadow-a: 0.5;
 }
 
+/* ------------------------------------------------------------------ */
+/* Fonts                                                               */
+/* ------------------------------------------------------------------ */
+
+/* Noto Sans SC (SIL OFL 1.1) cut down to the CJK glyphs this page actually
+   sets — see scripts/subset-font.py. Latin is left to Archivo, so the face is
+   only ever reached for Chinese and Japanese. The subset keeps the display
+   tier identical on Windows, macOS, iOS and Android instead of letting each
+   platform's own CJK face decide what the largest type looks like. */
+@font-face {
+  font-family: 'Sheet Display SC';
+  src: url('/fonts/noto-sans-sc-display-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+3000-303f, U+3040-30ff, U+3400-4dbf, U+4e00-9fff, U+f900-faff,
+    U+ff00-ffef;
+}
+
 @theme inline {
   --color-canvas: var(--c-canvas);
   --color-canvas-deep: var(--c-canvas-deep);
@@ -67,6 +86,12 @@
     'Archivo Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Display tier only. Latin first so headings keep the Archivo voice; the
+     subset above catches CJK, and the system faces remain as a last resort. */
+  --font-heading:
+    'Archivo Variable', 'Sheet Display SC', ui-sans-serif, system-ui, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
 
   --radius-xs: 3px;
   --radius-sm: 6px;
@@ -126,6 +151,21 @@
   h4 {
     text-wrap: balance;
     font-weight: 600;
+  }
+
+  /* The display face carries the largest type only. Card titles and nav labels
+     stay on the body stack: those sizes never show the difference, and the
+     subset must not be asked to cover dynamic text such as the site name. */
+  h1,
+  h2 {
+    font-family: var(--font-heading);
+  }
+
+  /* Theme the browser's own surfaces too: scrollbar and caret belong to the
+     palette as much as any element drawn here. */
+  html {
+    scrollbar-color: var(--c-line-strong) transparent;
+    caret-color: var(--c-brand);
   }
 
   p {
@@ -282,4 +322,25 @@
     opacity: 1 !important;
     stroke-dasharray: none !important;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* CJK display correction                                              */
+/* ------------------------------------------------------------------ */
+
+/* The display metrics are cut for Archivo: -0.035em tracking and a 0.98
+   line-height that flatter Latin capitals. CJK glyphs fill their em box, so
+   the same numbers crowd the lines and let them collide. Relax both, and only
+   for the two languages that need it. Deliberately outside a layer so these
+   win over the text-display utility they are correcting. */
+:lang(zh) h1,
+:lang(ja) h1 {
+  letter-spacing: -0.01em;
+  line-height: 1.14;
+}
+
+:lang(zh) h2,
+:lang(ja) h2 {
+  letter-spacing: -0.006em;
+  line-height: 1.3;
 }

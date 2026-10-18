@@ -39,7 +39,7 @@ export default function Capabilities() {
                     className="text-brand transition-colors duration-150 group-hover:text-ink"
                     aria-hidden="true"
                   />
-                  <h3 className="mt-5 text-[15px] font-medium text-ink">{item.title}</h3>
+                  <h3 className="mt-4 text-[15px] font-medium text-ink">{item.title}</h3>
                   <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{item.body}</p>
                 </div>
               )

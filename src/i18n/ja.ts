@@ -8,7 +8,7 @@ export const ja: Dict = {
   nav: {
     docs: 'ドキュメント',
     plaza: 'モデル',
-    pricing: '料金',
+    topup: 'チャージ',
     login: 'ログイン',
     register: '新規登録',
     console: 'コンソール',
