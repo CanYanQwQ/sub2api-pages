@@ -23,6 +23,11 @@ interface PriceOverlayValue {
 
 const PriceOverlayContext = createContext<PriceOverlayValue | null>(null)
 
+/** Whether the current history entry belongs to the open overlay. */
+function isOverlayEntry(): boolean {
+  return Boolean((window.history.state as { priceOverlay?: boolean } | null)?.priceOverlay)
+}
+
 /** `embed=1` tells the sheet to drop its own header — this overlay is the header. */
 function embedUrl(base: string, dark: boolean): string {
   try {
@@ -47,12 +52,42 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
     restoreFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
     setLoaded(false)
     setOpen(true)
+    // A real route would leave a history entry behind, so Back returns to the
+    // page it came from. An overlay has none, which makes Back skip the whole
+    // instance and land on about:blank. Push a same-URL entry instead, so Back
+    // closes the sheet — the one behaviour a reader expects from a page change.
+    if (!isOverlayEntry()) {
+      window.history.pushState({ ...window.history.state, priceOverlay: true }, '')
+    }
   }, [])
 
   const hide = useCallback(() => {
     setOpen(false)
     restoreFocus.current?.focus()
     restoreFocus.current = null
+    // Drop the entry we added, so the history stack does not grow every open.
+    if (isOverlayEntry()) window.history.back()
+  }, [])
+
+  // Back/forward closes the sheet. `hide` above already removed the listener by
+  // the time its own `history.back()` lands, so the two cannot double-close.
+  useEffect(() => {
+    if (!open) return
+    const onPop = () => {
+      setOpen(false)
+      restoreFocus.current?.focus()
+      restoreFocus.current = null
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [open])
+
+  // A reload keeps `history.state`, but this component starts closed. Clear the
+  // stale flag so the next Back is not swallowed by an entry nobody owns.
+  useEffect(() => {
+    if (isOverlayEntry()) {
+      window.history.replaceState({ ...window.history.state, priceOverlay: false }, '')
+    }
   }, [])
 
   // Scroll lock has to move the body, not the overlay: the overlay is inside the
