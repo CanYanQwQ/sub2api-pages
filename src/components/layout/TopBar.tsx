@@ -69,7 +69,10 @@ export default function TopBar() {
   const plaza = plazaVisibility(settings, resolving)
   const pricing = purchaseVisibility(settings, resolving, config.showPricing)
 
-  const nav: NavItem[] = [{ key: 'docs', label: t.nav.docs, href: links.docs }]
+  // No docs entry: the instance's own docs link is often unset, and when it is
+  // it points at upstream's GitHub. The footer still carries it for anyone who
+  // wants the source.
+  const nav: NavItem[] = []
   if (plaza !== 'hide') {
     nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }

@@ -255,7 +255,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
 | 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL），前面不加小标签。没有配置时不显示这一块 |
 | 首屏规格条：3 种 / 15 家 / 3 个 / v0.2.17 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值。每个数字都带量词和一句说明，避免四个光秃秃的整数并排却读不出在数什么 |
-| 导航与页脚与首屏的「价格」 | **不属于实例**：价目表是独立部署（默认 `https://model.zhouwanx.top/`），0.2.17 里没有任何设置项指向它，所以地址硬编码在 `VITE_PRICING_URL` / `?price=`。它是唯一在实例未就绪时也照常显示的入口，因为它不依赖任何实例数据。点击在新标签打开 |
+| 导航与页脚的「价格」 | **不属于实例**：价目表是独立部署（默认 `https://model.zhouwanx.top/`），0.2.17 里没有任何设置项指向它，所以地址硬编码在 `VITE_PRICING_URL` / `?price=`。它是唯一在实例未就绪时也照常显示的入口，因为它不依赖任何实例数据。点击在新标签打开 |
 
 ---
 
@@ -404,6 +404,19 @@ npx serve . -l 5000   # 然后访问 http://localhost:5000/parent.html
 
 检查「首页内容」填的是不是完整的 `https://` 地址。父站的 CSP `frame-src`
 依赖这个 URL 的 origin，填相对路径或不带协议会被当成 HTML 内容而不是 iframe。
+
+</details>
+
+<details>
+<summary><b>顶部导航里没有「文档」</b></summary>
+
+导航是从「读者真正想去的地方」倒推的：文档、模型广场、价格、充值。文档这一项被去掉了，
+因为 0.2.17 没有 `/docs` 路由，`VITE_DOCS_URL` 留空时它会回退到上游仓库的 GitHub 地址 ——
+对一个已经部署好的站点来说，把访客送去别人的仓库没有意义，而绝大多数实例也没配自己的
+文档地址。页脚仍然保留这个链接，需要看源码的人在那里能找到。
+
+想让顶部也出现，改 `src/components/layout/TopBar.tsx` 里构造 `nav` 的那几行即可
+（`links.docs` 一直是算好的，没有删）。
 
 </details>
 
