@@ -22,7 +22,6 @@ export const ja: Dict = {
     titleLines: ['サブスクリプションを、', 'ひとつの API キーに'],
     lead: 'Claude Code、Codex、Gemini CLI などのアカウントをひとつのゲートウェイに集約し、OpenAI・Anthropic・Gemini 互換の API として提供します。クライアント側の変更はベース URL だけです。',
     ctaPrimary: 'API キーを取得',
-    ctaSecondary: '料金を見る',
     statusConnecting: 'インスタンスを検出中',
     statusLive: '接続済み',
     statusDetected: 'インスタンス検出済み',
@@ -139,11 +138,5 @@ export const ja: Dict = {
   fallback: {
     brand: 'Sub2API',
     tagline: '統合 AI ゲートウェイ',
-  },
-  price: {
-    title: '料金',
-    newTab: '新しいタブで開く',
-    close: '閉じる',
-    loading: '料金表を読み込み中',
   },
 }

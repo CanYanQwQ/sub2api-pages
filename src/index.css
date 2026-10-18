@@ -151,12 +151,6 @@
     outline: none;
   }
 
-  /* Focus handed back by a closing panel is the program moving the caret, not
-     the reader navigating — hold the ring until the next Tab asks for it. */
-  [data-quiet-focus]:focus-visible {
-    outline: none;
-  }
-
   h1,
   h2,
   h3,

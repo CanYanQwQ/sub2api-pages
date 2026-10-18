@@ -22,7 +22,6 @@ export const en: Dict = {
     titleLines: ['Turn a subscription', 'into an API key'],
     lead: 'Bring Claude Code, Codex and Gemini CLI accounts into one gateway that speaks OpenAI, Anthropic and Gemini. Clients only change a base URL.',
     ctaPrimary: 'Get an API key',
-    ctaSecondary: 'View pricing',
     statusConnecting: 'Detecting instance',
     statusLive: 'Connected',
     statusDetected: 'Instance detected',
@@ -139,11 +138,5 @@ export const en: Dict = {
   fallback: {
     brand: 'Sub2API',
     tagline: 'Unified AI gateway',
-  },
-  price: {
-    title: 'Pricing',
-    newTab: 'Open in a new tab',
-    close: 'Close',
-    loading: 'Loading the price sheet',
   },
 }

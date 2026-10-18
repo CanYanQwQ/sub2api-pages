@@ -73,6 +73,9 @@ export default function TopBar() {
   if (plaza !== 'hide') {
     nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }
+  // The price sheet is a separate deployment, so it is pinned rather than gated
+  // on an instance setting.
+  nav.push({ key: 'price', label: t.nav.pricing, href: links.pricing, external: true })
   if (pricing !== 'hide') {
     nav.push({ key: 'topup', label: t.nav.topup, href: links.topup, pending: pricing === 'pending' })
   }

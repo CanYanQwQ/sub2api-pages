@@ -1,7 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { Container, SiteMark } from '../ui'
 import { useInstance } from '../InstanceContext'
-import { overlayClick, usePriceOverlay } from '../PriceOverlay'
 import { useI18n } from '../../i18n'
 import { visibleMenuItems } from '../../lib/instance'
 
@@ -15,7 +14,6 @@ import { visibleMenuItems } from '../../lib/instance'
 export default function Footer() {
   const { t } = useI18n()
   const { config, settings, links, base, logo } = useInstance()
-  const { open: openPrice } = usePriceOverlay()
 
   const siteName = settings?.site_name?.trim() || config.siteName || t.fallback.brand
 
@@ -61,32 +59,29 @@ export default function Footer() {
               {destinations.map((item) => {
                 // Links that point at the instance stay in the parent frame;
                 // anything genuinely off-site opens in its own tab.
-                const isPrice = item.key === 'pricing'
                 const external = /^https?:/i.test(item.href) && !item.href.startsWith(base || '//')
-                  return (
-                    <li key={item.key}>
-                      <a
-                        href={item.href}
-                        target={isPrice || external ? '_blank' : '_top'}
-                        rel={isPrice || external ? 'noreferrer noopener' : undefined}
-                        onClick={isPrice ? overlayClick(openPrice) : undefined}
-                        aria-haspopup={isPrice ? 'dialog' : undefined}
-                        className="inline-flex items-center gap-1 text-[13.5px] text-ink-2 transition-colors duration-150 hover:text-ink"
-                      >
-                        {item.label}
-                        {external && !isPrice ? (
-                          <ArrowUpRight
-                            size={12}
-                            strokeWidth={2}
-                            aria-hidden="true"
-                            className="text-ink-3"
-                          />
-                        ) : null}
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
+                return (
+                  <li key={item.key}>
+                    <a
+                      href={item.href}
+                      target={external ? '_blank' : '_top'}
+                      rel={external ? 'noreferrer noopener' : undefined}
+                      className="inline-flex items-center gap-1 text-[13.5px] text-ink-2 transition-colors duration-150 hover:text-ink"
+                    >
+                      {item.label}
+                      {external ? (
+                        <ArrowUpRight
+                          size={12}
+                          strokeWidth={2}
+                          aria-hidden="true"
+                          className="text-ink-3"
+                        />
+                      ) : null}
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         </div>
 

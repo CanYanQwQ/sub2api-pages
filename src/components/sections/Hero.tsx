@@ -1,8 +1,7 @@
-import { ArrowUpRight, Tag } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { ButtonLink, Container, CopyChip, CopyField } from '../ui'
 import { StatusDot } from '../ui'
 import { useInstance } from '../InstanceContext'
-import { overlayClick, usePriceOverlay } from '../PriceOverlay'
 import { useI18n } from '../../i18n'
 import { CLIENT_CLIS, PROTOCOLS, UPSTREAM_PLATFORMS } from '../../data/content'
 import { useCountUp } from '../../lib/motion'
@@ -22,7 +21,6 @@ import RoutingSchematic from './RoutingSchematic'
 export default function Hero() {
   const { t } = useI18n()
   const { base, status, settings, links } = useInstance()
-  const { open: openPrice } = usePriceOverlay()
 
   const registrationOpen = settings?.registration_enabled !== false
   const primaryHref = registrationOpen ? links.register : links.login
@@ -146,15 +144,6 @@ export default function Hero() {
                 iconRight={<ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />}
               >
                 {primaryLabel}
-              </ButtonLink>
-              <ButtonLink
-                href={links.pricing}
-                size="lg"
-                variant="secondary"
-                icon={<Tag size={15} strokeWidth={2} aria-hidden="true" />}
-                onClick={overlayClick(openPrice)}
-              >
-                {t.hero.ctaSecondary}
               </ButtonLink>
             </div>
 

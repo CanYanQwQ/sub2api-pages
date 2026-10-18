@@ -21,7 +21,6 @@ export const zh = {
     titleLines: ['把订阅额度', '变成一把 API Key'],
     lead: '把 Claude Code、Codex、Gemini CLI 这类订阅账号接入同一个网关，对外提供 OpenAI、Anthropic 与 Gemini 兼容接口。客户端只需要改一个 Base URL。',
     ctaPrimary: '获取 API Key',
-    ctaSecondary: '查看价格',
     statusConnecting: '正在识别实例',
     statusLive: '已连接',
     statusDetected: '已识别实例',
@@ -138,12 +137,6 @@ export const zh = {
   fallback: {
     brand: 'Sub2API',
     tagline: '统一 AI 接口网关',
-  },
-  price: {
-    title: '价格',
-    newTab: '新标签打开',
-    close: '关闭',
-    loading: '正在载入价目表',
   },
 }
 
