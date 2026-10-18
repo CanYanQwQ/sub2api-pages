@@ -31,10 +31,8 @@ export interface HomeConfig {
   /** When false, no network request is attempted (fully static page). */
   live: boolean
   /**
-   * Whether the "pricing" nav entry is gated on the instance's purchase
-   * switches. 0.2.17 hides the buy-subscription flow by default
-   * (`purchase_subscription_enabled` is a plain bool, so an unconfigured
-   * instance reports `false`), which would otherwise hide the entry.
+   * Whether the billing nav entry follows the instance's `payment_enabled`
+   * switch the way 0.2.17 does, or is pinned to always show (`always`).
    */
   showPricing: PricingMode
 }

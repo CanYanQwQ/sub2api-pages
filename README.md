@@ -180,7 +180,7 @@ cors:
 | `?lang=` | `zh` / `en` / `ja` | 强制语言，并隐藏语言切换按钮 |
 | `?api=` | 实例 origin | 覆盖自动推导的实例地址 |
 | `?live=0` | `0` | 关闭所有网络请求，纯静态渲染 |
-| `?pricing=` | `auto` / `always` | 「价格」入口是否跟随实例的购买开关 |
+| `?pricing=` | `auto` / `always` | 「价格」入口是否跟随实例的 `payment_enabled` |
 | `?site=` | 任意文本 | 兜底站点名，冷启动首帧就用它，避免先显示通用名 |
 
 例：
@@ -203,7 +203,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | `VITE_DOCS_URL` | 文档地址；0.2.17 没有 `/docs` 路由，留空则回退到仓库地址 |
 | `VITE_REPO_URL` | 仓库地址，页脚「Build」栏展示 |
 | `VITE_CONTACT_URL` | 联系方式地址 |
-| `VITE_SHOW_PRICING` | `auto`（默认）跟随实例购买开关；`always` 强制显示「价格」 |
+| `VITE_SHOW_PRICING` | `auto`（默认）跟随实例 `payment_enabled`；`always` 强制显示「价格」 |
 
 ---
 
@@ -318,15 +318,17 @@ npx serve . -l 5000   # 然后访问 http://localhost:5000/parent.html
 <details>
 <summary><b>顶部导航里没有「价格」</b></summary>
 
-`/purchase` 路由带 `requiresPayment` 守卫，所以入口是否显示取决于实例自己的开关。
-0.2.17 的 `purchase_subscription_enabled`、`payment_enabled`、`subscription_enabled`
-都是普通 `bool` 且没有 `omitempty`，**从未配置过的实例三项都返回 `false`** —— 这时隐藏
-入口是刻意的，否则点进去会被弹回 `/dashboard`。
+入口是否显示只看一个开关：`payment_enabled`。这和 0.2.17 完全一致 ——
+侧边栏里 `/purchase` 声明的是 `featureFlag: flagPayment`，而
+`utils/featureFlags.ts` 把 `payment` 定义为 `{ key: 'payment_enabled', mode: 'opt-out' }`，
+`/purchase` 路由守卫 `requiresPayment` 也只用同一个判断。所以只有实例**显式关闭支付**
+（`payment_enabled: false`）时入口才会消失，否则点进去会被弹回 `/dashboard`。
 
-想让它常驻，二选一：
+注意 `purchase_subscription_enabled` **不参与判断**。后端把它注释成「是否展示购买订阅页面入口」，
+但 0.2.17 前端没有任何模块读它（只在一个测试用例里当 fixture 出现），拿它做门控会让
+支付正常开启的实例也丢掉入口。
 
-- 后台开启「购买订阅」/ 支付，并设置 `purchase_subscription_url` 或 `/purchase` 页；
-- 或者不管实例设置，在首页内容里加 `?pricing=always`（构建期可用 `VITE_SHOW_PRICING=always`）。
+想让它常驻，不管实例设置：在首页内容里加 `?pricing=always`（构建期可用 `VITE_SHOW_PRICING=always`）。
 
 </details>
 

@@ -29,6 +29,7 @@ export interface PublicSettings {
   model_plaza_require_auth?: boolean
   subscription_enabled?: boolean
   payment_enabled?: boolean
+  /** Returned by 0.2.17 but read by no frontend module — see purchaseVisibility. */
   purchase_subscription_enabled?: boolean
   /** Absolute external URL used instead of the built-in /purchase page. */
   purchase_subscription_url?: string
@@ -215,14 +216,21 @@ export function prefetchPublicSettings(base: string): Promise<PublicSettings | n
 export type Visibility = 'show' | 'hide' | 'pending'
 
 /**
- * Whether the "pricing" entry should appear.
+ * Whether the billing entry (`/purchase`) should appear.
  *
- * 0.2.17 exposes three relevant switches: `purchase_subscription_enabled`
- * (opt-out for the buy-subscription flow), `payment_enabled` and
- * `subscription_enabled`. All three are plain bools, so an instance that never
- * configured them reports `false` — and `/purchase` is guarded by
- * `requiresPayment`, which bounces straight back to /dashboard. Linking there
- * with checkout switched off would be a dead end.
+ * Mirrors 0.2.17 exactly. The sidebar entry is declared with
+ * `featureFlag: flagPayment` (AppSidebar.vue), and `FeatureFlags.payment` is
+ * `{ key: 'payment_enabled', mode: 'opt-out' }` (utils/featureFlags.ts), so only
+ * an explicit `payment_enabled === false` removes it. The `/purchase` route
+ * guard (`meta.requiresPayment`) applies the same single test and otherwise
+ * bounces the visitor back to /dashboard — so hiding it is also what keeps us
+ * from linking into a redirect.
+ *
+ * `purchase_subscription_enabled` deliberately plays no part: the backend
+ * documents it as "是否展示购买订阅页面入口" (domain_constants.go:385) but no
+ * 0.2.17 frontend module reads it — it only survives as a fixture in
+ * stores/__tests__/app.spec.ts. Honouring it here previously hid the entry on
+ * instances that had checkout fully enabled.
  */
 export function purchaseVisibility(
   settings: PublicSettings | null,
@@ -231,9 +239,7 @@ export function purchaseVisibility(
 ): Visibility {
   if (mode === 'always') return 'show'
   if (!settings) return resolving ? 'pending' : 'show'
-  if (settings.purchase_subscription_enabled === false) return 'hide'
-  if (settings.payment_enabled === false && settings.subscription_enabled === false) return 'hide'
-  return 'show'
+  return settings.payment_enabled === false ? 'hide' : 'show'
 }
 
 /** `model_plaza_enabled` is opt-out: only an explicit `false` hides the entry. */
