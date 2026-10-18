@@ -28,6 +28,12 @@ export interface HomeConfig {
   docsUrl: string
   repoUrl: string
   contactUrl: string
+  /**
+   * The standalone price sheet. Hardcoded on purpose: it is a separate
+   * deployment (the model plaza project), not a route this page can discover
+   * from the instance — 0.2.17 exposes no setting for it.
+   */
+  pricingUrl: string
   /** When false, no network request is attempted (fully static page). */
   live: boolean
   /**
@@ -38,6 +44,8 @@ export interface HomeConfig {
 }
 
 export const DEFAULT_REPO_URL = 'https://github.com/Wei-Shaw/sub2api'
+/** The price sheet lives in its own deployment; nothing on the instance points at it. */
+export const DEFAULT_PRICING_URL = 'https://model.zhouwanx.top/'
 
 function readQuery(): URLSearchParams {
   try {
@@ -109,6 +117,12 @@ export function resolveConfig(): HomeConfig {
     docsUrl: docsUrl || DEFAULT_REPO_URL,
     repoUrl: first(query.get('repo'), injected?.repoUrl, env.VITE_REPO_URL, DEFAULT_REPO_URL),
     contactUrl: first(query.get('contact'), injected?.contactUrl, env.VITE_CONTACT_URL),
+    pricingUrl: first(
+      query.get('price'),
+      injected?.pricingUrl,
+      env.VITE_PRICING_URL,
+      DEFAULT_PRICING_URL,
+    ),
     live: query.get('live') === '0' ? false : (injected?.live ?? true),
     showPricing:
       first(query.get('pricing'), env.VITE_SHOW_PRICING).toLowerCase() === 'always'

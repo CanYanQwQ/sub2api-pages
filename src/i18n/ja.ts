@@ -8,6 +8,7 @@ export const ja: Dict = {
   nav: {
     docs: 'ドキュメント',
     plaza: 'モデル',
+    pricing: '料金',
     topup: 'チャージ',
     login: 'ログイン',
     register: '新規登録',
@@ -21,7 +22,7 @@ export const ja: Dict = {
     titleLines: ['サブスクリプションを、', 'ひとつの API キーに'],
     lead: 'Claude Code、Codex、Gemini CLI などのアカウントをひとつのゲートウェイに集約し、OpenAI・Anthropic・Gemini 互換の API として提供します。クライアント側の変更はベース URL だけです。',
     ctaPrimary: 'API キーを取得',
-    ctaSecondary: 'ドキュメントを読む',
+    ctaSecondary: '料金を見る',
     statusConnecting: 'インスタンスを検出中',
     statusLive: '接続済み',
     statusDetected: 'インスタンス検出済み',

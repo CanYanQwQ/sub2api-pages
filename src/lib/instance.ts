@@ -109,6 +109,8 @@ export interface InstanceLinks {
   modelPlaza: string
   docs: string
   topup: string
+  /** The standalone price sheet — a different origin, not an instance route. */
+  pricing: string
   /** True when the docs link leaves the instance (settings.doc_url or the repo). */
   docsExternal: boolean
 }
@@ -123,6 +125,7 @@ export function buildLinks(
   base: string,
   settings: PublicSettings | null,
   docsFallback: string,
+  pricingUrl: string,
 ): InstanceLinks {
   const root = base || ''
   const docUrl = settings?.doc_url?.trim()
@@ -136,6 +139,7 @@ export function buildLinks(
     docs: docUrl || docsFallback,
     docsExternal: /^https?:/i.test(docUrl || docsFallback),
     topup: purchaseUrl || `${root}/purchase`,
+    pricing: pricingUrl,
   }
 }
 

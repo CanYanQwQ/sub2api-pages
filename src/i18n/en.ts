@@ -8,6 +8,7 @@ export const en: Dict = {
   nav: {
     docs: 'Docs',
     plaza: 'Models',
+    pricing: 'Pricing',
     topup: 'Top up',
     login: 'Sign in',
     register: 'Sign up',
@@ -21,7 +22,7 @@ export const en: Dict = {
     titleLines: ['Turn a subscription', 'into an API key'],
     lead: 'Bring Claude Code, Codex and Gemini CLI accounts into one gateway that speaks OpenAI, Anthropic and Gemini. Clients only change a base URL.',
     ctaPrimary: 'Get an API key',
-    ctaSecondary: 'Read the docs',
+    ctaSecondary: 'View pricing',
     statusConnecting: 'Detecting instance',
     statusLive: 'Connected',
     statusDetected: 'Instance detected',

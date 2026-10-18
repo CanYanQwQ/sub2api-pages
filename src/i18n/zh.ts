@@ -6,6 +6,7 @@ export const zh = {
   nav: {
     docs: '文档',
     plaza: '模型广场',
+    pricing: '价格',
     topup: '充值',
     login: '登录',
     register: '注册',
@@ -20,7 +21,7 @@ export const zh = {
     titleLines: ['把订阅额度', '变成一把 API Key'],
     lead: '把 Claude Code、Codex、Gemini CLI 这类订阅账号接入同一个网关，对外提供 OpenAI、Anthropic 与 Gemini 兼容接口。客户端只需要改一个 Base URL。',
     ctaPrimary: '获取 API Key',
-    ctaSecondary: '查看接入文档',
+    ctaSecondary: '查看价格',
     statusConnecting: '正在识别实例',
     statusLive: '已连接',
     statusDetected: '已识别实例',

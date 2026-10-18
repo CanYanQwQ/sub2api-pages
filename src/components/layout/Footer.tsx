@@ -19,6 +19,7 @@ export default function Footer() {
 
   const destinations = [
     { key: 'docs', label: t.nav.docs, href: links.docs },
+    { key: 'pricing', label: t.nav.pricing, href: links.pricing },
     ...(settings?.model_plaza_enabled !== false
       ? [{ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza }]
       : []),

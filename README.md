@@ -203,6 +203,7 @@ cors:
 | `?api=` | 实例 origin | 覆盖自动推导的实例地址 |
 | `?live=0` | `0` | 关闭所有网络请求，纯静态渲染 |
 | `?pricing=` | `auto` / `always` | 「充值」入口是否跟随实例的 `payment_enabled` |
+| `?price=` | 绝对 URL | 覆盖价格页地址 |
 | `?site=` | 任意文本 | 兜底站点名，冷启动首帧就用它，避免先显示通用名 |
 
 例：
@@ -225,6 +226,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | `VITE_DOCS_URL` | 文档地址；0.2.17 没有 `/docs` 路由，留空则回退到仓库地址 |
 | `VITE_REPO_URL` | 仓库地址；`VITE_DOCS_URL` 留空时「查看接入文档」回退到这里 |
 | `VITE_CONTACT_URL` | 联系方式地址 |
+| `VITE_PRICING_URL` | 价格页地址，默认 `https://model.zhouwanx.top/`。它是独立部署的价目表，实例上没有对应路由 |
 | `VITE_SHOW_PRICING` | `auto`（默认）跟随实例 `payment_enabled`；`always` 强制显示「充值」 |
 
 ---
@@ -253,6 +255,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
 | 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL），前面不加小标签。没有配置时不显示这一块 |
 | 首屏规格条：3 种 / 15 家 / 3 个 / v0.2.17 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值。每个数字都带量词和一句说明，避免四个光秃秃的整数并排却读不出在数什么 |
+| 导航与首屏的「价格」 | **不属于实例**：价目表是独立部署（默认 `https://model.zhouwanx.top/`），0.2.17 里没有任何设置项指向它，所以地址硬编码在 `VITE_PRICING_URL` / `?price=`。它是唯一在实例未就绪时也照常显示的入口，因为它不依赖任何实例数据 |
 
 ---
 

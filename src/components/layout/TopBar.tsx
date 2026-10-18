@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown, Globe, Menu, Moon, Sun, X } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, Globe, Menu, Moon, Sun, X } from 'lucide-react'
 import { ButtonLink, Container, SiteMark, buttonClass } from '../ui'
 import { useInstance } from '../InstanceContext'
 import { useTheme } from '../ThemeContext'
@@ -14,6 +14,8 @@ interface NavItem {
   href: string
   /** Slot reserved while the settings payload is still in flight. */
   pending?: boolean
+  /** A different origin: opens in its own tab instead of navigating the frame. */
+  external?: boolean
 }
 
 /**
@@ -71,6 +73,10 @@ export default function TopBar() {
   if (plaza !== 'hide') {
     nav.push({ key: 'plaza', label: t.nav.plaza, href: links.modelPlaza, pending: plaza === 'pending' })
   }
+  // The price sheet is a separate deployment, so it is pinned rather than gated
+  // on an instance setting. It sits next to the plaza on purpose: both answer
+  // "what does this cost", so they read as one pair.
+  nav.push({ key: 'price', label: t.nav.pricing, href: links.pricing, external: true })
   if (pricing !== 'hide') {
     nav.push({ key: 'topup', label: t.nav.topup, href: links.topup, pending: pricing === 'pending' })
   }
@@ -117,14 +123,23 @@ export default function TopBar() {
               <a
                 key={item.key}
                 href={item.href}
-                target="_top"
+                target={item.external ? '_blank' : '_top'}
+                rel={item.external ? 'noreferrer noopener' : undefined}
                 aria-hidden={item.pending || undefined}
                 className={cn(
-                  'rounded-sm px-2.5 py-1.5 text-[13.5px] text-ink-2 transition-colors duration-150 hover:bg-surface hover:text-ink',
+                  'inline-flex items-center gap-1 rounded-sm px-2.5 py-1.5 text-[13.5px] text-ink-2 transition-colors duration-150 hover:bg-surface hover:text-ink',
                   item.pending && 'invisible',
                 )}
               >
                 {item.label}
+                {item.external ? (
+                  <ArrowUpRight
+                    size={12}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="text-ink-3"
+                  />
+                ) : null}
               </a>
             ))}
           </nav>
@@ -209,10 +224,14 @@ export default function TopBar() {
                 <a
                   key={item.key}
                   href={item.href}
-                  target="_top"
-                  className="border-b border-line py-3 text-[15px] text-ink-2 transition-colors duration-150 hover:text-ink"
+                  target={item.external ? '_blank' : '_top'}
+                  rel={item.external ? 'noreferrer noopener' : undefined}
+                  className="flex items-center gap-1.5 border-b border-line py-3 text-[15px] text-ink-2 transition-colors duration-150 hover:text-ink"
                 >
                   {item.label}
+                  {item.external ? (
+                    <ArrowUpRight size={13} strokeWidth={2} aria-hidden="true" className="text-ink-3" />
+                  ) : null}
                 </a>
               ))}
           </nav>

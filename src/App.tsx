@@ -102,7 +102,10 @@ export default function App() {
     }
   }, [base, config.live])
 
-  const links = useMemo(() => buildLinks(base, settings, config.docsUrl), [base, settings, config.docsUrl])
+  const links = useMemo(
+    () => buildLinks(base, settings, config.docsUrl, config.pricingUrl),
+    [base, settings, config.docsUrl, config.pricingUrl],
+  )
   const logo = useMemo(() => resolveSiteLogo(settings, base), [settings, base])
 
   const instance = useMemo<InstanceState>(

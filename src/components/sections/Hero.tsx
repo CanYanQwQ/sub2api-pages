@@ -1,4 +1,4 @@
-import { ArrowUpRight, BookOpen } from 'lucide-react'
+import { ArrowUpRight, Tag } from 'lucide-react'
 import { ButtonLink, Container, CopyChip, CopyField } from '../ui'
 import { StatusDot } from '../ui'
 import { useInstance } from '../InstanceContext'
@@ -146,10 +146,10 @@ export default function Hero() {
                 {primaryLabel}
               </ButtonLink>
               <ButtonLink
-                href={links.docs}
+                href={links.pricing}
                 size="lg"
                 variant="secondary"
-                icon={<BookOpen size={15} strokeWidth={2} aria-hidden="true" />}
+                icon={<Tag size={15} strokeWidth={2} aria-hidden="true" />}
               >
                 {t.hero.ctaSecondary}
               </ButtonLink>

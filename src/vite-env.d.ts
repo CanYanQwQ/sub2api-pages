@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_DOCS_URL?: string
   readonly VITE_REPO_URL?: string
   readonly VITE_CONTACT_URL?: string
+  readonly VITE_PRICING_URL?: string
 }
 
 interface ImportMeta {
@@ -22,6 +23,7 @@ interface Window {
     docsUrl: string
     repoUrl: string
     contactUrl: string
+    pricingUrl: string
     live: boolean
   }>
 }
