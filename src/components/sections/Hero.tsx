@@ -60,7 +60,7 @@ export default function Hero() {
   return (
     <div className="relative">
       <Container>
-        <div className="grid grid-cols-1 items-center gap-16 pt-14 pb-16 sm:pt-16 lg:grid-cols-12 lg:gap-12 lg:pt-20 lg:pb-24">
+        <div className="grid grid-cols-1 items-center gap-16 pt-14 pb-16 sm:pt-16 lg:grid-cols-12 lg:gap-12 lg:pt-20 lg:pb-14">
           {/* ---------------------------------------------------------- */}
           {/* Specification column                                        */}
           {/* ---------------------------------------------------------- */}
@@ -124,7 +124,7 @@ export default function Hero() {
               </ButtonLink>
             </div>
 
-            <div className="rise mt-10" style={{ animationDelay: '240ms' }}>
+            <div className="rise mt-8" style={{ animationDelay: '240ms' }}>
               {base ? (
                 <div className="max-w-[420px]">
                   <div className="mb-2 text-mono-label">{t.hero.endpointLabel}</div>
@@ -134,22 +134,23 @@ export default function Hero() {
                     copiedLabel={t.hero.endpointCopied}
                   />
                   {alternates.length > 0 ? (
-                    <dl className="mt-3">
-                      <div className="mb-1.5 text-mono-label">{t.hero.altEndpoints}</div>
+                    // Kept on one wrapping line rather than a stacked table: two
+                    // or three alternates do not justify ~70px of ruled rows in
+                    // the first screen, and the height they cost pushed the
+                    // specification strip below the fold on a 900px viewport.
+                    <div className="mt-3 flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
+                      <span className="text-mono-label">{t.hero.altEndpoints}</span>
                       {alternates.map((entry) => (
-                        <div
-                          key={entry.endpoint}
-                          className="flex items-baseline justify-between gap-4 border-t border-line/70 py-1"
-                        >
-                          <dt className="truncate text-[11.5px] leading-snug text-ink-3">
+                        <span key={entry.endpoint} className="flex items-baseline gap-1.5">
+                          <span className="text-[11.5px] leading-snug text-ink-3">
                             {entry.name || entry.endpoint}
-                          </dt>
-                          <dd className="shrink-0 font-mono text-[11px] leading-snug text-ink-2">
+                          </span>
+                          <span className="font-mono text-[11px] leading-snug text-ink-2">
                             {entry.endpoint.replace(/^https?:\/\//, '')}
-                          </dd>
-                        </div>
+                          </span>
+                        </span>
                       ))}
-                    </dl>
+                    </div>
                   ) : null}
                 </div>
               ) : (
@@ -185,7 +186,7 @@ export default function Hero() {
             else, set as a footer rule under both columns so the hero reads as a
             finished sheet rather than a headline with a diagram beside it. */}
         <dl
-          className="rise mt-14 grid grid-cols-2 gap-y-7 border-t border-line pt-7 sm:grid-cols-4"
+          className="rise mt-10 grid grid-cols-2 gap-y-7 border-t border-line pt-7 sm:grid-cols-4"
           style={{ animationDelay: '300ms' }}
         >
           {[
