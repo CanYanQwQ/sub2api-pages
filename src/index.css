@@ -1,0 +1,285 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ */
+/* Theme contract                                                      */
+/* ------------------------------------------------------------------ */
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  --c-canvas: #f1f3f2;
+  --c-canvas-deep: #e7ebe9;
+  --c-surface: #ffffff;
+  --c-surface-2: #fafbfa;
+  --c-ink: #0b1213;
+  --c-ink-2: #45565a;
+  --c-ink-3: #75878a;
+  --c-line: #dce2e0;
+  --c-line-strong: #c4cdca;
+  --c-brand: #0e8c7f;
+  --c-brand-ink: #0a6f65;
+  --c-brand-bright: #14b8a6;
+  --c-brand-wash: #e4f4f0;
+  --c-signal: #a96a12;
+  --c-signal-wash: #f7ebd8;
+  --c-shadow: 12 20 21;
+  --c-shadow-a: 0.07;
+}
+
+[data-theme='dark'] {
+  --c-canvas: #070c0d;
+  --c-canvas-deep: #0a1112;
+  --c-surface: #0d1517;
+  --c-surface-2: #101a1c;
+  --c-ink: #e9efed;
+  --c-ink-2: #a9b8b6;
+  --c-ink-3: #7c8e90;
+  --c-line: #1b2729;
+  --c-line-strong: #27383b;
+  --c-brand: #2dd4bf;
+  --c-brand-ink: #5fe3d1;
+  --c-brand-bright: #2dd4bf;
+  --c-brand-wash: #0c2a28;
+  --c-signal: #e5a63f;
+  --c-signal-wash: #2a2113;
+  --c-shadow: 0 0 0;
+  --c-shadow-a: 0.5;
+}
+
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-canvas-deep: var(--c-canvas-deep);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-ink-3: var(--c-ink-3);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-brand: var(--c-brand);
+  --color-brand-ink: var(--c-brand-ink);
+  --color-brand-bright: var(--c-brand-bright);
+  --color-brand-wash: var(--c-brand-wash);
+  --color-signal: var(--c-signal);
+  --color-signal-wash: var(--c-signal-wash);
+
+  --font-sans:
+    'Archivo Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --text-display: clamp(2.45rem, 5.1vw, 4.35rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.035em;
+  --text-title: clamp(1.7rem, 2.7vw, 2.45rem);
+  --text-title--line-height: 1.08;
+  --text-title--letter-spacing: -0.025em;
+
+  --container-sheet: 74rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  * {
+    border-color: var(--c-line);
+  }
+
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    margin: 0;
+    background-color: var(--c-canvas);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01' 1;
+  }
+
+  ::selection {
+    background-color: var(--c-brand);
+    color: var(--c-canvas);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-brand);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    font-weight: 600;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilities                                                           */
+/* ------------------------------------------------------------------ */
+
+/* Technical drafting paper: a dot lattice that reads as engineering grid
+   rather than a decorative gradient wash. */
+@utility paper-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--c-line-strong) 1px, transparent 0);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--c-line);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--c-line);
+}
+
+/* A 1px rule that fades out — used to separate bands without hard stops. */
+@utility rule-fade {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-line-strong) 12%, var(--c-line-strong) 88%, transparent);
+}
+
+@utility text-mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  color: var(--c-ink-3);
+}
+
+/* The only elevation on the page, and only for a floating popover. */
+@utility shadow-lift {
+  box-shadow: 0 12px 28px -14px rgb(var(--c-shadow) / var(--c-shadow-a));
+}
+
+@utility link-underline {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--c-line-strong);
+  transition: text-decoration-color 160ms ease;
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion                                                              */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes packet-run {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(200%);
+  }
+}
+
+/* The signal that travels along a wire in the routing schematic. */
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+/* The single orchestrated entrance. Only the hero uses it. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility rise {
+  animation: rise 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility wire-flow {
+  stroke-dasharray: 3 13;
+  animation: dash-flow 1.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .wire-flow {
+    animation: none !important;
+    opacity: 1 !important;
+    stroke-dasharray: none !important;
+  }
+}

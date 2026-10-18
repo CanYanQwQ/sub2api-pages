@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Sub2API</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Resolve the colour scheme before first paint. The page lives inside a
+      // cross-origin iframe, so it cannot read Sub2API's own theme class or
+      // localStorage — it relies on ?theme=, its own storage, then the OS.
+      (function () {
+        try {
+          var params = new URLSearchParams(window.location.search)
+          var query = params.get('theme')
+          var stored = null
+          try {
+            stored = window.localStorage.getItem('sub2api-home-theme')
+          } catch (e) {
+            stored = null
+          }
+          var mode = query || stored || 'auto'
+          var prefersDark =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+          var dark = mode === 'dark' || (mode !== 'light' && prefersDark)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+        } catch (e) {
+          /* keep the light default */
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

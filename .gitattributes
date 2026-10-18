@@ -1,0 +1,9 @@
+# Normalise line endings so the repo builds identically on Windows and on
+# Vercel's Linux runners.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.webp binary
+*.woff binary
+*.woff2 binary
