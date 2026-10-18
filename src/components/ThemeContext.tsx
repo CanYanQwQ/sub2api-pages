@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { ThemeMode } from '../lib/config'
-import { applyTheme, onSystemThemeChange, readStoredTheme, storeTheme } from '../lib/theme'
+import { applyTheme, onSystemThemeChange, readStoredTheme, resolveIsDark, storeTheme } from '../lib/theme'
 
 interface ThemeValue {
   mode: ThemeMode
@@ -34,14 +34,15 @@ export function ThemeProvider({
   }, [])
 
   const toggle = useCallback(() => {
-    setModeState((current) => {
-      const nextDark = !applyTheme(current)
-      const next: ThemeMode = nextDark ? 'dark' : 'light'
-      storeTheme(next)
-      setIsDark(nextDark)
-      return next
-    })
-  }, [])
+    // Resolve the mode that is actually on screen, then apply its opposite.
+    // The old code re-applied the *current* mode and only flipped React state,
+    // which left the DOM one click behind: the first click changed nothing,
+    // the second turned the page dark.
+    const next: ThemeMode = resolveIsDark(mode) ? 'light' : 'dark'
+    setModeState(next)
+    storeTheme(next)
+    setIsDark(applyTheme(next))
+  }, [mode])
 
   // Follow the OS only while the user has not pinned a scheme.
   useEffect(() => {

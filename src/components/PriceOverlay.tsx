@@ -28,6 +28,15 @@ function isOverlayEntry(): boolean {
   return Boolean((window.history.state as { priceOverlay?: boolean } | null)?.priceOverlay)
 }
 
+/** Origin the sheet is served from, used to reject messages from other frames. */
+function originOf(base: string): string {
+  try {
+    return new URL(base).origin
+  } catch {
+    return ''
+  }
+}
+
 /** `embed=1` tells the sheet to drop its own header — this overlay is the header. */
 function embedUrl(base: string, dark: boolean): string {
   try {
@@ -81,6 +90,21 @@ export function PriceOverlayProvider({ url, children }: { url: string; children:
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [open])
+
+  // The sheet takes keyboard focus the moment it is clicked, so this document
+  // stops seeing Escape. It forwards the key back as a message instead; the
+  // origin check keeps an unrelated frame from closing the sheet.
+  useEffect(() => {
+    if (!open) return
+    const sheetOrigin = originOf(url)
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== sheetOrigin) return
+      if ((event.data as { type?: string } | null)?.type !== 'sub2api:price-close') return
+      hide()
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [open, url, hide])
 
   // A reload keeps `history.state`, but this component starts closed. Clear the
   // stale flag so the next Back is not swallowed by an entry nobody owns.

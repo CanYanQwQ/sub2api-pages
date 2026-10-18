@@ -234,6 +234,7 @@ export default function TopBar() {
                   href={item.href}
                   target={item.external || item.overlay ? '_blank' : '_top'}
                   rel={item.external || item.overlay ? 'noreferrer noopener' : undefined}
+                  aria-haspopup={item.overlay ? 'dialog' : undefined}
                   onClick={
                     item.overlay
                       ? (event) => {
