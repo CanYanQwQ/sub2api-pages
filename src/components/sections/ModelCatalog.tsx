@@ -35,11 +35,13 @@ function GroupBlock({
   group,
   freeLabel,
   perCallLabel,
+  fromLabel,
   index,
 }: {
   group: PlazaGroup
   freeLabel: string
   perCallLabel: string
+  fromLabel: string
   index: number
 }) {
   const models = group.models ?? []
@@ -50,9 +52,10 @@ function GroupBlock({
   // but is not: on a real instance every group reported `openai`, so the line
   // just repeated itself down the page and cost a row of height each time.
   const note = group.description?.trim() || ''
-  // A multiplier of 1 is the default and carries no information; printing "×1"
-  // on four rows out of five trains the eye to skip that position entirely.
-  const showMultiplier = multiplier !== null && multiplier !== 1 && multiplier !== 0
+  // Printed for every group, including ×1. Hiding the default made the column
+  // look like one group had a multiplier and the others were missing data,
+  // because the reader cannot tell "no multiplier" from "not loaded".
+  const showMultiplier = multiplier !== null && multiplier !== 0
 
   return (
     <div
@@ -80,7 +83,11 @@ function GroupBlock({
 
       <ul className="mt-3.5">
         {shown.map((model) => {
-          const price = priceTag(model, { perCall: perCallLabel, free: freeLabel })
+          const price = priceTag(model, {
+            perCall: perCallLabel,
+            free: freeLabel,
+            from: fromLabel,
+          })
           return (
             <li
               key={model.name}
@@ -90,6 +97,7 @@ function GroupBlock({
                 {model.name}
               </span>
               <span
+                title={price?.detail || undefined}
                 className={[
                   'shrink-0 font-mono text-[11.5px] leading-snug tabular-nums',
                   price?.free ? 'text-brand-ink' : 'text-ink-3',
@@ -167,6 +175,7 @@ export default function ModelCatalog() {
               group={group}
               freeLabel={t.models.free}
               perCallLabel={t.models.perCall}
+              fromLabel={t.models.from}
               index={index}
             />
           ))}

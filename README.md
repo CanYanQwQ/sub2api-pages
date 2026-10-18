@@ -245,10 +245,9 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 15 个上游平台 | `Anthropic`、`OpenAI`、`Gemini`、`Antigravity`、`Grok`、`DeepSeek`、`Kimi`、`Zhipu`、`MiniMax`、`Kiro`、`Cline`、`OpenCode Go`、`Command Code`、`TypeSafe`、`Composite` |
 | 账号池与调度 / 密钥与分组 / 用量与账单 / 渠道监控 / 模型广场 / 多种登录方式 | 后台对应的六个功能区 |
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
-| 模型目录（深色区块） | `GET /api/v1/model-plaza`，逐分组列出公开模型，并显示**该实例上的实际单价**（`models[].pricing`，按 token 计价显示百万 token 输入/输出，按次计价显示每次价），分组的 `rate_multiplier` 以 `×N` 标出；接口关闭或需登录时整块消失 |
-| 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条，没有则不显示这一块 |
-| 常见问题 | 接入方式、CSP、导航开关、加载策略与版本兼容 |
-| 首屏规格条：3 / 15 / 3 / 版本号 | 协议族数、上游平台数、支持的 CLI 数、`settings.version` |
+| 模型目录（深色区块） | `GET /api/v1/model-plaza`，逐分组列出公开模型，并显示**该实例上的实际单价**（`models[].pricing.intervals`）。按 token 计价显示每百万 token 的输入 / 输出价；按次计价（图片 / 视频）显示每次价，并把 `tier_label` 里 1K / 2K / 4K 等分辨率档位逐档列出；长上下文分档（`≤272K` / `>272K`）行内显示首档并标「起」，完整分段在悬停提示中。分组的 `rate_multiplier` **每个分组都显示**（含 `×1`）；接口关闭或需登录时整块消失 |
+| 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL）。没有配置时不显示这一块 |
+| 首屏规格条：3 / 15 / 3 / 版本号 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值 |
 | 页脚 `iframe / home_content` | 本页面自身的接入方式 |
 | 页脚版本号 | 「已连接」时显示实例真实版本，否则显示 `0.2.17` |
 
@@ -277,6 +276,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
   所有动画都在 `prefers-reduced-motion` 下失效，且 `html.reveal-on` 只在脚本执行后才加，
   所以脚本没跑起来时页面是完整可见的，不会变成一排隐形区块。
 - **密度靠删掉容器，不是靠缩小字号。** 区块间距比常规落地页紧一档（`py-14 sm:py-16 lg:py-20`），腾出来的空间给了内容：能力区从六张等大卡片改成「一个主条目 + 五个支撑条目」，上游平台从卡片改成一张三列规则表。
+- **价格不折叠。** 分档计价（1K / 2K / 4K、长上下文）逐档摊开，而不是只显示一个「$0.15 起」：读者要判断的是「我这张图多少钱」，一个数字答不了。唯一的例外是长上下文的两档 token 价——首档标「起」、完整分段放进 `title`，因为把每行都写成两个价格会把列表高度翻倍去描述少数请求。
 
 ---
 

@@ -257,11 +257,24 @@ export type BillingMode = 'token' | 'per_request' | 'image' | 'video'
  * The backend fills this from the same catalogue the billing engine uses, so
  * what the page prints is what the user is really charged — no copy to drift.
  */
+/** One billing tier: a resolution or a context window, plus its own rates. */
+export interface PlazaPriceInterval {
+  min_tokens?: number | null
+  max_tokens?: number | null
+  /** "1K" / "2K" / "4K" for image models, "≤272K" / ">272K" for long context. */
+  tier_label?: string | null
+  input_price?: number | null
+  output_price?: number | null
+  per_request_price?: number | null
+}
+
 export interface PlazaPricing {
   billing_mode?: BillingMode | string
   input_price?: number | null
   output_price?: number | null
   per_request_price?: number | null
+  /** Authoritative tier list; the scalar fields above repeat the first tier. */
+  intervals?: PlazaPriceInterval[] | null
 }
 
 export interface PlazaModel {

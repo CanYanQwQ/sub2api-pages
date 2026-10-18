@@ -73,3 +73,17 @@ export const UPSTREAM_PLATFORMS: { id: string; label: string }[] = [
   { id: 'typesafe', label: 'TypeSafe' },
   { id: 'composite', label: 'Composite' },
 ]
+
+/** The three compatibility surfaces Sub2API 0.2.17 serves. */
+export const PROTOCOLS: { id: string; path: string }[] = [
+  { id: 'openai', path: '/v1/chat/completions' },
+  { id: 'anthropic', path: '/v1/messages' },
+  { id: 'gemini', path: '/v1beta/models' },
+]
+
+/** Client CLIs shown in the quick-start tabs, minus the raw curl example. */
+export const CLIENT_CLIS: { id: string; label: string }[] = [
+  { id: 'claude-code', label: 'Claude Code' },
+  { id: 'codex', label: 'Codex' },
+  { id: 'gemini', label: 'Gemini CLI' },
+]

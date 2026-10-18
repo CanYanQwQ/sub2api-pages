@@ -1,5 +1,5 @@
 export { Button, ButtonLink, buttonClass } from './Button'
 export type { ButtonProps, ButtonLinkProps, ButtonSize, ButtonVariant } from './Button'
 export { Container, Section, SectionHeader, Label, Rule } from './Layout'
-export { CopyButton, CopyField } from './Copy'
+export { CopyButton, CopyChip, CopyField } from './Copy'
 export { BrandMark, SiteMark, StatusDot, Chip } from './Bits'

@@ -1,9 +1,9 @@
 import { ArrowUpRight, BookOpen } from 'lucide-react'
-import { ButtonLink, Container, CopyField } from '../ui'
+import { ButtonLink, Container, CopyChip, CopyField } from '../ui'
 import { StatusDot } from '../ui'
 import { useInstance } from '../InstanceContext'
 import { useI18n } from '../../i18n'
-import { UPSTREAM_PLATFORMS } from '../../data/content'
+import { CLIENT_CLIS, PROTOCOLS, UPSTREAM_PLATFORMS } from '../../data/content'
 import { useCountUp } from '../../lib/motion'
 import { cn } from '../../lib/cn'
 import RoutingSchematic from './RoutingSchematic'
@@ -53,9 +53,9 @@ export default function Hero() {
 
   // The three counts animate once; the version string is not a number and is
   // rendered as-is.
-  const protocolCount = useCountUp(3)
+  const protocolCount = useCountUp(PROTOCOLS.length)
   const upstreamCount = useCountUp(UPSTREAM_PLATFORMS.length)
-  const clientCount = useCountUp(3)
+  const clientCount = useCountUp(CLIENT_CLIS.length)
 
   return (
     <div className="relative">
@@ -134,21 +134,19 @@ export default function Hero() {
                     copiedLabel={t.hero.endpointCopied}
                   />
                   {alternates.length > 0 ? (
-                    // Kept on one wrapping line rather than a stacked table: two
-                    // or three alternates do not justify ~70px of ruled rows in
-                    // the first screen, and the height they cost pushed the
-                    // specification strip below the fold on a 900px viewport.
-                    <div className="mt-3 flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
-                      <span className="text-mono-label">{t.hero.altEndpoints}</span>
+                    // Chips rather than ruled rows: each alternate copies on
+                    // click exactly like the primary field above it, but two of
+                    // them only cost one line instead of a stacked table.
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className="text-mono-label mr-1">{t.hero.altEndpoints}</span>
                       {alternates.map((entry) => (
-                        <span key={entry.endpoint} className="flex items-baseline gap-1.5">
-                          <span className="text-[11.5px] leading-snug text-ink-3">
-                            {entry.name || entry.endpoint}
-                          </span>
-                          <span className="font-mono text-[11px] leading-snug text-ink-2">
-                            {entry.endpoint.replace(/^https?:\/\//, '')}
-                          </span>
-                        </span>
+                        <CopyChip
+                          key={entry.endpoint}
+                          value={entry.endpoint}
+                          name={entry.name || entry.endpoint.replace(/^https?:\/\//, '')}
+                          label={t.hero.altCopy}
+                          copiedLabel={t.hero.endpointCopied}
+                        />
                       ))}
                     </div>
                   ) : null}
