@@ -294,6 +294,134 @@
   }
 }
 
+/* A wire drawing itself. Paths carry pathLength="100", so the dash maths is the
+   same whatever the real arc length of the curve is. */
+@keyframes wire-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@utility wire-draw {
+  stroke-dasharray: 100;
+  animation: wire-draw 640ms cubic-bezier(0.62, 0, 0.36, 1) both;
+}
+
+/* Held back until the wire beneath it has finished drawing, so the travelling
+   signal never appears on a line that is still being drawn. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility fade-in-late {
+  animation: fade-in 420ms ease-out both;
+}
+
+/* Crop marks settling into the corners of the schematic panel. */
+@keyframes bracket-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility bracket-in {
+  animation: bracket-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The core is the only thing on the page that keeps moving once the diagram has
+   assembled: a dashed ring turning slowly, and a ring that breathes outward like
+   a radar sweep. Both are anchored to the core centre in user units. */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility spin-slow {
+  transform-box: view-box;
+  animation: spin-slow 34s linear infinite;
+}
+
+@keyframes core-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  72%,
+  100% {
+    transform: scale(1.42);
+    opacity: 0;
+  }
+}
+
+@utility core-pulse {
+  transform-box: view-box;
+  animation: core-pulse 3.8s cubic-bezier(0.3, 0, 0.4, 1) infinite;
+}
+
+/* One instrument sweep across the panel after the diagram has assembled. */
+@keyframes scan-sweep {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.5;
+  }
+  70% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(var(--scan-travel, 100%));
+    opacity: 0;
+  }
+}
+
+@utility scan-sweep {
+  animation: scan-sweep 1.5s cubic-bezier(0.4, 0, 0.3, 1) 900ms both;
+}
+
+/* A rule that draws itself from the left. Used by the spec band. */
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility rule-draw {
+  transform-origin: left center;
+  animation: rule-draw 780ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The paper lattice drifting one cell, so the sheet reads as live rather than
+   printed. Twenty-two seconds for a single 22px cell: no visible seam, no
+   perceived movement, only an absence of stillness. */
+@keyframes lattice-drift {
+  to {
+    background-position: 22px 22px;
+  }
+}
+
+@utility lattice-drift {
+  animation: lattice-drift 26s linear infinite;
+}
+
 /* The single orchestrated entrance. Only the hero uses it. */
 @keyframes rise {
   from {
@@ -353,10 +481,23 @@ details[open] .faq-body {
 
 @media (prefers-reduced-motion: reduce) {
   .rise,
-  .wire-flow {
+  .wire-flow,
+  .wire-draw,
+  .fade-in-late,
+  .bracket-in,
+  .rule-draw,
+  .lattice-drift,
+  .spin-slow,
+  .core-pulse {
     animation: none !important;
     opacity: 1 !important;
     stroke-dasharray: none !important;
+    transform: none !important;
+  }
+
+  /* The sweep is pure ornament: with motion off it simply never happens. */
+  .scan-sweep {
+    display: none !important;
   }
 
   /* Reveal must never leave content hidden: drop the start state entirely. */

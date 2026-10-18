@@ -68,6 +68,12 @@ Sub2API 的后台设置里有一个 **「设置 → 站点 → 首页内容」**
   <img src="docs/full-light.jpg" alt="完整页面" width="560">
 </p>
 
+### 首屏以下的区块
+
+<p align="center">
+  <img src="docs/sections.jpg" alt="协议、能力、流程与上游平台" width="880">
+</p>
+
 ---
 
 ## 三步用起来
@@ -217,7 +223,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | `VITE_SUB2API_BASE_URL` | 实例 origin；一般不需要，referrer 已能推导 |
 | `VITE_SITE_NAME` | 兜底站点名，会被实例的 `site_name` 覆盖 |
 | `VITE_DOCS_URL` | 文档地址；0.2.17 没有 `/docs` 路由，留空则回退到仓库地址 |
-| `VITE_REPO_URL` | 仓库地址，页脚「Build」栏展示 |
+| `VITE_REPO_URL` | 仓库地址；`VITE_DOCS_URL` 留空时「查看接入文档」回退到这里 |
 | `VITE_CONTACT_URL` | 联系方式地址 |
 | `VITE_SHOW_PRICING` | `auto`（默认）跟随实例 `payment_enabled`；`always` 强制显示「充值」 |
 
@@ -246,9 +252,7 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 账号池与调度 / 密钥与分组 / 用量与账单 / 渠道监控 / 模型广场 / 多种登录方式 | 后台对应的六个功能区 |
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
 | 其他接入地址 | `settings.custom_endpoints`，实例配置了几条就列几条；每条都是一枚可点击复制的 chip，复制内容与主地址一致（完整 URL），前面不加小标签。没有配置时不显示这一块 |
-| 首屏规格条：3 / 15 / 3 / 版本号 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值 |
-| 页脚 `iframe / home_content` | 本页面自身的接入方式 |
-| 页脚版本号 | 「已连接」时显示实例真实版本，否则显示 `0.2.17` |
+| 首屏规格条：3 种 / 15 家 / 3 个 / v0.2.17 | 协议族数、上游平台数、支持的 CLI 数、`settings.version`。三个计数都取自 `src/data/content.ts` 的 `PROTOCOLS` / `UPSTREAM_PLATFORMS` / `CLIENT_CLIS`，源码里没有裸数字；版本号在「已连接」时是实例真实值。每个数字都带量词和一句说明，避免四个光秃秃的整数并排却读不出在数什么 |
 
 ---
 
@@ -267,11 +271,48 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 - **中文标题按语义断行。** 「变成」「还是」这类词不会在中间折行。
 - **字体全部自托管**：Archivo（拉丁展示）与 IBM Plex Mono（等宽标注）走 `@fontsource`，
   中文标题另用 Noto Sans SC 的子集（见下方「字体子集」），不依赖 Google Fonts CDN。
-- **动效只有一种语法：入场。** 每个区块用同一个 `IntersectionObserver` 在进入视口时
-  上浮淡入，首屏规格条的数字在落位时累加一次（`useReveal` / `useCountUp`，  `src/lib/motion.ts`）。没有视差、没有循环动画、没有 hover 位移。
+- **动效分三层，各自有明确职责**（详见下方「动效」）。没有视差、没有跟随鼠标、没有无限循环的装饰动画。
   所有动画都在 `prefers-reduced-motion` 下失效，且 `html.reveal-on` 只在脚本执行后才加，
   所以脚本没跑起来时页面是完整可见的，不会变成一排隐形区块。
 - **密度靠删掉容器，不是靠缩小字号。** 区块间距比常规落地页紧一档（`py-14 sm:py-16 lg:py-20`），腾出来的空间给了内容：能力区从六张等大卡片改成「一个主条目 + 五个支撑条目」，上游平台从卡片改成一张三列规则表。
+
+---
+
+## 动效
+
+动画分三层，每层只负责一件事。全部是 CSS 动画或 `requestAnimationFrame`，没有引入任何动画库。
+
+### 1. 首屏编排（只在加载时跑一次）
+
+首屏是一段有先后顺序的编排，不是一堆元素同时淡入：
+
+| 时刻 | 动作 |
+| --- | --- |
+| 0 ms | 状态胶囊与标题第一行上浮 |
+| 60 / 150 ms | 标题第二、三行依次上浮 |
+| 140 ms | 右侧图纸面板整体入场 |
+| 200 / 260 / 320 / 380 ms | 四个角标（crop mark）逐个落位 |
+| 200 ms 起，每根 +70 ms | 上游连线自左向右画出（`pathLength="100"` + `stroke-dashoffset`） |
+| 520 ms | 中心节点亮起，虚线环开始缓慢旋转 |
+| 760 ms 起 | 出站连线画出 |
+| 900 ms | 一道 1px 扫描线自上而下掠过面板，只扫一次 |
+| 1080 ms 起，每格 +80 ms | 底部上游平台格子浮现 |
+
+编排靠 CSS `animation-delay` 和 `both` 填充模式，没有用 JS 计时器串场——所以它不会因为主线程繁忙而错拍。
+
+### 2. 滚动入场
+
+一个 `IntersectionObserver` 管全页（`src/lib/motion.ts` 的 `useReveal`）：元素进入视口前 12% 时加 `.is-in`，上浮 16px 淡入。同一个网格里的兄弟元素用 `revealDelay(index * 55)` 排出 55ms 的阶梯（CSS 变量 `--reveal-delay`，不是内联 `transition-delay`，这样降级时能被统一覆盖）。
+
+### 3. 常驻
+
+- 中心节点两圈：外圈 `34s` 匀速旋转的虚线环，内圈 `3.8s` 呼吸。
+- 面板背景的点阵以 `26s` 周期极慢漂移（`background-position`，不是 transform，避免重绘整个面板）。
+- 顶栏底部一条 1px 阅读进度线，`scaleX` 跟随滚动比例。
+
+### 降级
+
+`prefers-reduced-motion: reduce` 下：所有 `animation` 关掉、`stroke-dasharray` 复位成实线（拓扑图完整可见而不是断线）、扫描线直接 `display: none`、`html.reveal-on .reveal` 强制 `opacity: 1`。规格条的数字不累加，直接显示终值。
 
 ---
 
@@ -291,10 +332,11 @@ src/
     ThemeContext.tsx         主题解析与切换
     layout/                  TopBar、Footer
     sections/                Hero、Protocols、Capabilities、Flow、
-                             QuickStart、Upstreams、CallToAction、RoutingSchematic
+                             QuickStart、Upstreams、RoutingSchematic
     ui/                      Button、CopyField、StatusDot、Layout 等
   data/content.ts            上游平台等静态数据
-  lib/                       config（URL 参数）、instance（实例探测与链接）、theme
+  lib/                       config（URL 参数）、instance（实例探测与链接）、
+                             theme、motion（入场编排与计数）
   i18n/                      zh / en / ja 三套文案
 public/
   fonts/                     中文展示字体子集与 OFL 授权
@@ -435,6 +477,7 @@ npx serve . -l 5000   # 然后访问 http://localhost:5000/parent.html
 - [x] 不发送 `X-Frame-Options` / `frame-ancestors`，可被父站嵌入
 - [x] Logo 四种来源（data URI / 相对路径 / 空值 / 解码失败）表现正确，失败时无破图
 - [x] 全量扫描确认无表情符号、无彩色渐变
+- [x] 首屏编排在 `prefers-reduced-motion: reduce` 下完全静态，拓扑图为实线、内容零隐藏
 
 ---
 

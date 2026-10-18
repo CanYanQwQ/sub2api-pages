@@ -16,7 +16,6 @@ export default function Footer() {
   const { config, settings, links, base, logo } = useInstance()
 
   const siteName = settings?.site_name?.trim() || config.siteName || t.fallback.brand
-  const version = settings?.version
 
   const destinations = [
     { key: 'docs', label: t.nav.docs, href: links.docs },
@@ -50,14 +49,16 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-x-12 gap-y-8">
-            <div>
-              <div className="text-mono-label">Links</div>
-              <ul className="mt-3 space-y-2">
-                {destinations.map((item) => {
-                  // Links that point at the instance stay in the parent frame;
-                  // anything genuinely off-site opens in its own tab.
-                  const external = /^https?:/i.test(item.href) && !item.href.startsWith(base || '//')
+          <div className="md:text-right">
+            <div className="text-mono-label">Links</div>
+            {/* One horizontal row rather than a stacked column: with the build
+                block gone, three links stacked left a tall empty column and the
+                band read as unfinished. */}
+            <ul className="mt-3 flex flex-wrap gap-x-7 gap-y-2 md:justify-end">
+              {destinations.map((item) => {
+                // Links that point at the instance stay in the parent frame;
+                // anything genuinely off-site opens in its own tab.
+                const external = /^https?:/i.test(item.href) && !item.href.startsWith(base || '//')
                   return (
                     <li key={item.key}>
                       <a
@@ -80,25 +81,6 @@ export default function Footer() {
                   )
                 })}
               </ul>
-            </div>
-
-            <div>
-              <div className="text-mono-label">Build</div>
-              <ul className="mt-3 space-y-2 font-mono text-[12px] text-ink-3">
-                <li>
-                  <a
-                    href={config.repoUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="transition-colors duration-150 hover:text-ink"
-                  >
-                    {t.footer.builtOn}
-                  </a>
-                </li>
-                <li>Sub2API{version ? ` ${version}` : ' 0.2.17'}</li>
-                <li>iframe / home_content</li>
-              </ul>
-            </div>
           </div>
         </div>
 

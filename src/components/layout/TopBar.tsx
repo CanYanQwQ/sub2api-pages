@@ -30,12 +30,24 @@ export default function TopBar() {
 
   const [open, setOpen] = useState(false)
   const [elevated, setElevated] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const onScroll = () => setElevated(window.scrollY > 8)
+    const onScroll = () => {
+      setElevated(window.scrollY > 8)
+      // How far down the sheet the reader is, 0 at the top and 1 at the end.
+      // A zero-length scroll range (short embed, tall viewport) stays at 0
+      // rather than dividing by zero.
+      const range = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(range > 0 ? Math.min(1, Math.max(0, window.scrollY / range)) : 0)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
   // Close the mobile sheet when the viewport grows past the breakpoint.
@@ -171,6 +183,15 @@ export default function TopBar() {
           </div>
         </div>
       </Container>
+
+      {/* Reading progress: one hairline that grows along the bottom edge of the
+          bar, so the chrome reports position without adding a widget. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px">
+        <div
+          className="h-full origin-left bg-brand/70"
+          style={{ transform: `scaleX(${progress})`, transition: 'transform 120ms linear' }}
+        />
+      </div>
 
       {/* Mobile sheet ---------------------------------------------- */}
       <div

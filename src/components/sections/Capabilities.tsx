@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { KeyRound, Layers, LogIn, Radar, ReceiptText, Store } from 'lucide-react'
 import { useI18n } from '../../i18n'
+import { revealDelay } from '../../lib/motion'
 import { Container, Section, SectionHeader } from '../ui'
 
 /**
@@ -31,7 +32,10 @@ export default function Capabilities() {
         <SectionHeader title={t.capabilities.title} lead={t.capabilities.lead} />
 
         {lead ? (
-          <div className="mt-12 flex flex-col gap-4 border-t border-line pt-6 sm:flex-row sm:gap-7 sm:pt-7">
+          <div
+            data-reveal=""
+            className="reveal mt-12 flex flex-col gap-4 border-t border-line pt-6 sm:flex-row sm:gap-7 sm:pt-7"
+          >
             <LeadIcon
               size={18}
               strokeWidth={1.75}
@@ -65,7 +69,9 @@ export default function Capabilities() {
             return (
               <div
                 key={item.title}
-                className="group border-t border-line py-5 transition-colors duration-150"
+                data-reveal=""
+                style={revealDelay(60 + index * 55)}
+                className="reveal group border-t border-line py-5 transition-colors duration-150"
               >
                 <div className="flex items-baseline gap-2.5">
                   <Icon

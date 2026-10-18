@@ -12,7 +12,6 @@ import Capabilities from './components/sections/Capabilities'
 import Flow from './components/sections/Flow'
 import QuickStart from './components/sections/QuickStart'
 import Upstreams from './components/sections/Upstreams'
-import CallToAction from './components/sections/CallToAction'
 import { detectLang, resolveConfig } from './lib/config'
 import {
   buildLinks,
@@ -138,7 +137,6 @@ export default function App() {
               <Flow />
               <QuickStart />
               <Upstreams />
-              <CallToAction />
             </main>
             <Footer />
           </div>

@@ -7,6 +7,12 @@ import { BrandMark } from '../ui'
  * core, which fans back out into upstream account pools. Everything is hairline
  * strokes and mono labels — no glows, no gradient meshes.
  *
+ * The entrance is choreographed rather than uniform: clients land first, the
+ * inbound wires then draw themselves into the core, the core settles, the
+ * outbound wires draw, and only then do the pools and the travelling signals
+ * appear. Each wire carries `pathLength="100"` so the dash maths is identical
+ * for a straight line and a bezier — see `wire-draw` in index.css.
+ *
  * Coordinates are hand-placed on a 440x380 grid so the wires meet the nodes
  * exactly; changing a constant here means changing the path below it.
  */
@@ -56,6 +62,40 @@ function outboundPath(cx: number): string {
 const INBOUND = CLIENTS.map((client) => inboundPath(client.x + NODE_W / 2))
 const OUTBOUND = POOLS.map((pool) => outboundPath(pool.x + POOL_W / 2))
 
+/** Draw the wire, then let the signal start running along it. */
+const INBOUND_DRAW = 200
+const OUTBOUND_DRAW = 760
+const DRAW_MS = 640
+const WIRE_STEP = 70
+
+function Wire({ d, index, start }: { d: string; index: number; start: number }) {
+  const drawAt = start + index * WIRE_STEP
+  return (
+    <g>
+      <path
+        d={d}
+        stroke="var(--c-line-strong)"
+        strokeWidth="1"
+        pathLength={100}
+        className="wire-draw"
+        style={{ animationDelay: `${drawAt}ms` }}
+      />
+      {/* The brand hairline is the packet's track: it must not appear until the
+          grey line under it has finished drawing. */}
+      <g className="fade-in-late" style={{ animationDelay: `${drawAt + DRAW_MS - 40}ms` }}>
+        <path
+          d={d}
+          stroke="var(--c-brand)"
+          strokeWidth="1.25"
+          strokeOpacity="0.9"
+          className="wire-flow"
+          style={{ animationDelay: `${index * 220}ms` }}
+        />
+      </g>
+    </g>
+  )
+}
+
 export default function RoutingSchematic() {
   return (
     <svg
@@ -65,68 +105,74 @@ export default function RoutingSchematic() {
       className="h-auto w-full"
       fill="none"
     >
-      {/* Wires: a solid hairline with a travelling dashed signal on top. */}
-      <g className="rise" style={{ animationDelay: '160ms' }}>
-        {[...INBOUND, ...OUTBOUND].map((d, index) => (
-          <g key={d}>
-            <path d={d} stroke="var(--c-line-strong)" strokeWidth="1" />
-            <path
-              d={d}
-              stroke="var(--c-brand)"
-              strokeWidth="1.25"
-              strokeOpacity="0.9"
-              className="wire-flow"
-              style={{ animationDelay: `${index * 220}ms` }}
-            />
-          </g>
+      {/* Wires ------------------------------------------------------- */}
+      <g>
+        {INBOUND.map((d, index) => (
+          <Wire key={d} d={d} index={index} start={INBOUND_DRAW} />
+        ))}
+        {OUTBOUND.map((d, index) => (
+          <Wire key={d} d={d} index={index} start={OUTBOUND_DRAW} />
         ))}
       </g>
 
-      {/* Client nodes. */}
+      {/* Client nodes ------------------------------------------------ */}
       <g className="rise" style={{ animationDelay: '40ms' }}>
-        {CLIENTS.map((client) => (
+        {CLIENTS.map((client, index) => (
           <g key={client.name}>
-            <rect
-              x={client.x}
-              y={NODE_Y}
-              width={NODE_W}
-              height={NODE_H}
-              rx="7"
-              fill="var(--c-surface)"
-              stroke="var(--c-line)"
-            />
-            <text
-              x={client.x + 14}
-              y={NODE_Y + 18}
-              fill="var(--c-ink)"
-              fontSize="12"
-              fontWeight="500"
-              letterSpacing="-0.01em"
-            >
-              {client.name}
-            </text>
-            <text
-              x={client.x + 14}
-              y={NODE_Y + 32}
-              fill="var(--c-ink-3)"
-              fontSize="8.5"
-              fontFamily="var(--font-mono)"
-              letterSpacing="0.02em"
-            >
-              {client.protocol}
-            </text>
-            <circle
-              cx={client.x + NODE_W / 2}
-              cy={NODE_Y + NODE_H}
-              r="2.25"
-              fill="var(--c-brand)"
-            />
+            <g className="rise" style={{ animationDelay: `${40 + index * 70}ms` }}>
+              <rect
+                x={client.x}
+                y={NODE_Y}
+                width={NODE_W}
+                height={NODE_H}
+                rx="7"
+                fill="var(--c-surface)"
+                stroke="var(--c-line)"
+              />
+              <text
+                x={client.x + 14}
+                y={NODE_Y + 18}
+                fill="var(--c-ink)"
+                fontSize="12"
+                fontWeight="500"
+                letterSpacing="-0.01em"
+              >
+                {client.name}
+              </text>
+              <text
+                x={client.x + 14}
+                y={NODE_Y + 32}
+                fill="var(--c-ink-3)"
+                fontSize="8.5"
+                fontFamily="var(--font-mono)"
+                letterSpacing="0.02em"
+              >
+                {client.protocol}
+              </text>
+              <circle
+                cx={client.x + NODE_W / 2}
+                cy={NODE_Y + NODE_H}
+                r="2.25"
+                fill="var(--c-brand)"
+              />
+            </g>
           </g>
         ))}
       </g>
 
-      {/* Core. */}
-      <g className="rise" style={{ animationDelay: '100ms' }}>
+      {/* Core -------------------------------------------------------- */}
+      <g className="rise" style={{ animationDelay: '520ms' }}>
+        {/* Breathing ring: the only thing still moving once the diagram is
+            assembled, so the panel never looks like a static picture. */}
+        <circle
+          cx={CORE_X}
+          cy={CORE_Y}
+          r={CORE_R}
+          stroke="var(--c-brand)"
+          strokeWidth="1"
+          className="core-pulse"
+          style={{ transformOrigin: `${CORE_X}px ${CORE_Y}px` }}
+        />
         <circle
           cx={CORE_X}
           cy={CORE_Y}
@@ -134,6 +180,8 @@ export default function RoutingSchematic() {
           stroke="var(--c-line)"
           strokeWidth="1"
           strokeDasharray="2 6"
+          className="spin-slow"
+          style={{ transformOrigin: `${CORE_X}px ${CORE_Y}px` }}
         />
         <circle
           cx={CORE_X}
@@ -149,10 +197,10 @@ export default function RoutingSchematic() {
         </g>
       </g>
 
-      {/* Upstream pools. */}
-      <g className="rise" style={{ animationDelay: '220ms' }}>
-        {POOLS.map((pool) => (
-          <g key={pool.name}>
+      {/* Upstream pools ---------------------------------------------- */}
+      <g>
+        {POOLS.map((pool, index) => (
+          <g key={pool.name} className="rise" style={{ animationDelay: `${1080 + index * 80}ms` }}>
             <rect
               x={pool.x}
               y={POOL_Y}

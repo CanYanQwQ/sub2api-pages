@@ -5,7 +5,6 @@ import { useInstance } from '../InstanceContext'
 import { useI18n } from '../../i18n'
 import { CLIENT_CLIS, PROTOCOLS, UPSTREAM_PLATFORMS } from '../../data/content'
 import { useCountUp } from '../../lib/motion'
-import { cn } from '../../lib/cn'
 import RoutingSchematic from './RoutingSchematic'
 
 /**
@@ -14,6 +13,10 @@ import RoutingSchematic from './RoutingSchematic'
  * Left column is a specification sheet: instance status, the claim, the two
  * actions and the endpoint you copy. Right column is the routing schematic,
  * which carries every bit of visual interest so the type can stay quiet.
+ *
+ * The spec band underneath is the page's summary table: four figures, each with
+ * the unit that gives the number a meaning and a line naming what is counted.
+ * A bare "3" tells a reader nothing; "3 种 · 同一端口，三种请求结构" does.
  */
 export default function Hero() {
   const { t } = useI18n()
@@ -57,6 +60,33 @@ export default function Hero() {
   const upstreamCount = useCountUp(UPSTREAM_PLATFORMS.length)
   const clientCount = useCountUp(CLIENT_CLIS.length)
 
+  const specs = [
+    {
+      label: t.spec.protocols,
+      value: String(protocolCount),
+      unit: t.spec.protocolsUnit,
+      note: t.spec.protocolsNote,
+    },
+    {
+      label: t.spec.upstreams,
+      value: String(upstreamCount),
+      unit: t.spec.upstreamsUnit,
+      note: t.spec.upstreamsNote,
+    },
+    {
+      label: t.spec.clients,
+      value: String(clientCount),
+      unit: t.spec.clientsUnit,
+      note: t.spec.clientsNote,
+    },
+    {
+      label: t.spec.version,
+      value: settings?.version ? `v${settings.version}` : 'v0.2.17',
+      unit: '',
+      note: t.spec.versionNote,
+    },
+  ]
+
   return (
     <div className="relative">
       <Container>
@@ -85,12 +115,13 @@ export default function Hero() {
               ) : null}
             </div>
 
-            <h1
-              className="rise mt-7 text-display text-ink"
-              style={{ animationDelay: '60ms' }}
-            >
-              {t.hero.titleLines.map((line) => (
-                <span key={line} className="block">
+            <h1 className="mt-7 text-display text-ink">
+              {t.hero.titleLines.map((line, index) => (
+                <span
+                  key={line}
+                  className="rise block"
+                  style={{ animationDelay: `${60 + index * 90}ms` }}
+                >
                   {line}
                 </span>
               ))}
@@ -98,14 +129,14 @@ export default function Hero() {
 
             <p
               className="rise mt-6 max-w-[54ch] text-[15.5px] leading-[1.75] text-ink-2"
-              style={{ animationDelay: '120ms' }}
+              style={{ animationDelay: '240ms' }}
             >
               {t.hero.lead}
             </p>
 
             <div
               className="rise mt-9 flex flex-wrap items-center gap-3"
-              style={{ animationDelay: '180ms' }}
+              style={{ animationDelay: '300ms' }}
             >
               <ButtonLink
                 href={primaryHref}
@@ -124,7 +155,7 @@ export default function Hero() {
               </ButtonLink>
             </div>
 
-            <div className="rise mt-8" style={{ animationDelay: '240ms' }}>
+            <div className="rise mt-8" style={{ animationDelay: '360ms' }}>
               {base ? (
                 <div className="max-w-[420px]">
                   <div className="mb-2 text-mono-label">{t.hero.endpointLabel}</div>
@@ -164,7 +195,36 @@ export default function Hero() {
           <div className="lg:col-span-5">
             <div className="rise relative" style={{ animationDelay: '140ms' }}>
               <div className="relative overflow-hidden rounded-md border border-line bg-surface p-6 sm:p-8">
-                <div className="paper-grid pointer-events-none absolute inset-0 opacity-[0.55]" />
+                <div className="paper-grid lattice-drift pointer-events-none absolute inset-0 opacity-[0.55]" />
+
+                {/* Crop marks: the four corners of a technical plate. */}
+                <span
+                  aria-hidden="true"
+                  className="bracket-in pointer-events-none absolute left-2 top-2 h-2.5 w-2.5 border-l border-t border-brand/45"
+                  style={{ animationDelay: '200ms' }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="bracket-in pointer-events-none absolute right-2 top-2 h-2.5 w-2.5 border-r border-t border-brand/45"
+                  style={{ animationDelay: '260ms' }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="bracket-in pointer-events-none absolute bottom-2 left-2 h-2.5 w-2.5 border-b border-l border-brand/45"
+                  style={{ animationDelay: '320ms' }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="bracket-in pointer-events-none absolute bottom-2 right-2 h-2.5 w-2.5 border-b border-r border-brand/45"
+                  style={{ animationDelay: '380ms' }}
+                />
+
+                {/* One instrument sweep, then it is gone. */}
+                <div
+                  aria-hidden="true"
+                  className="scan-sweep pointer-events-none absolute inset-x-0 top-0 h-px bg-brand/60"
+                />
+
                 <div className="relative">
                   <RoutingSchematic />
                 </div>
@@ -179,33 +239,22 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* The spec strip: the four numbers a reader wants before anything
-            else, set as a footer rule under both columns so the hero reads as a
-            finished sheet rather than a headline with a diagram beside it. */}
-        <dl
-          className="rise mt-10 grid grid-cols-2 gap-y-7 border-t border-line pt-7 sm:grid-cols-4"
-          style={{ animationDelay: '300ms' }}
-        >
-          {[
-            { label: t.spec.protocols, value: String(protocolCount) },
-            { label: t.spec.upstreams, value: String(upstreamCount) },
-            { label: t.spec.clients, value: String(clientCount) },
-            {
-              label: t.spec.version,
-              value: settings?.version ? `v${settings.version}` : '0.2.17',
-            },
-          ].map((spec, index) => (
-            <div
-              key={spec.label}
-              className={cn(
-                'flex flex-col gap-2 pr-4',
-                index > 0 && 'sm:border-l sm:border-line sm:pl-7',
-              )}
-            >
+        {/* Spec band: four figures set as one ruled table. The dividers come
+            from a 1px grid gap over a line-coloured backdrop, so there are no
+            doubled edges to compensate for. */}
+        <dl className="rise mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-4" style={{ animationDelay: '420ms' }}>
+          {specs.map((spec) => (
+            <div key={spec.label} className="flex flex-col gap-3 bg-canvas px-5 py-5 sm:px-6">
               <dt className="text-mono-label">{spec.label}</dt>
-              <dd className="font-mono text-[15px] leading-none text-ink tabular-nums">
+              <dd className="flex items-baseline gap-1.5 font-mono text-[27px] leading-none tracking-[-0.02em] text-ink tabular-nums">
                 {spec.value}
+                {spec.unit ? (
+                  <span className="text-[11.5px] leading-none tracking-normal text-ink-3">
+                    {spec.unit}
+                  </span>
+                ) : null}
               </dd>
+              <p className="text-[11.5px] leading-relaxed text-ink-3">{spec.note}</p>
             </div>
           ))}
         </dl>

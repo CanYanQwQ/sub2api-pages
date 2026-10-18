@@ -1,4 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
+
+/**
+ * Stagger helper for `data-reveal` children.
+ *
+ * The reveal transition reads `--reveal-delay`, which CSS cannot compute from a
+ * sibling index; passing it as a custom property keeps the whole thing declarative
+ * and avoids a per-element inline `transition-delay` that would override the
+ * reduced-motion reset.
+ */
+export function revealDelay(ms: number): CSSProperties {
+  return { '--reveal-delay': `${ms}ms` } as CSSProperties
+}
 
 /**
  * Entrance animation for the sections below the fold.
