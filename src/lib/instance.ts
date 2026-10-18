@@ -236,6 +236,89 @@ export function prefetchPublicSettings(base: string): Promise<PublicSettings | n
 }
 
 /* ---------------------------------------------------------------------- */
+/* Model plaza                                                             */
+/* ---------------------------------------------------------------------- */
+
+/**
+ * GET /api/v1/model-plaza, the catalogue behind Sub2API's own 模型广场 page.
+ *
+ * Shaped after `{ code, data: { description, groups[] } }`. A group is a
+ * purchasable bucket (rate multiplier, optional peak pricing) holding the
+ * models it can route to. Only the fields this page renders are modelled —
+ * the full payload also carries per-interval pricing tables that are of no use
+ * on a landing page.
+ */
+export interface PlazaModel {
+  name?: string
+  platform?: string
+}
+
+export interface PlazaGroup {
+  id?: number
+  name?: string
+  description?: string
+  platform?: string
+  rate_multiplier?: number
+  is_exclusive?: boolean
+  models?: PlazaModel[]
+}
+
+export interface ModelPlaza {
+  description?: string
+  groups: PlazaGroup[]
+}
+
+/**
+ * Public only when the instance set `model_plaza_require_auth: false`; with
+ * auth required the request 401s and this resolves to null, which removes the
+ * whole section rather than showing an empty shell.
+ */
+export async function loadModelPlaza(base: string, timeoutMs = 6000): Promise<ModelPlaza | null> {
+  if (!base) return null
+  const controller = new AbortController()
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const response = await fetch(`${base}/api/v1/model-plaza`, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'omit',
+      cache: 'no-store',
+      signal: controller.signal,
+      headers: { Accept: 'application/json' },
+    })
+    if (!response.ok) return null
+    const payload: unknown = await response.json()
+    if (!payload || typeof payload !== 'object') return null
+    const record = payload as Record<string, unknown>
+    const body = (record.data ?? record) as Record<string, unknown>
+    const rawGroups = body.groups
+    if (!Array.isArray(rawGroups)) return null
+    const groups = rawGroups
+      .map((entry) => (entry && typeof entry === 'object' ? (entry as PlazaGroup) : null))
+      .filter((entry): entry is PlazaGroup => entry !== null)
+      // A group with no models would render as an empty row; drop it.
+      .filter((group) => Array.isArray(group.models) && group.models.length > 0)
+    if (groups.length === 0) return null
+    return { description: typeof body.description === 'string' ? body.description : '', groups }
+  } catch {
+    return null
+  } finally {
+    window.clearTimeout(timer)
+  }
+}
+
+const plazaInflight = new Map<string, Promise<ModelPlaza | null>>()
+
+export function loadModelPlazaOnce(base: string): Promise<ModelPlaza | null> {
+  if (!base) return Promise.resolve(null)
+  const existing = plazaInflight.get(base)
+  if (existing) return existing
+  const request = loadModelPlaza(base)
+  plazaInflight.set(base, request)
+  return request
+}
+
+/* ---------------------------------------------------------------------- */
 /* Conditional nav entries                                                 */
 /* ---------------------------------------------------------------------- */
 

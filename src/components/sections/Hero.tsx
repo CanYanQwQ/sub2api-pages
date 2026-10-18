@@ -3,6 +3,8 @@ import { ButtonLink, Container, CopyField } from '../ui'
 import { StatusDot } from '../ui'
 import { useInstance } from '../InstanceContext'
 import { useI18n } from '../../i18n'
+import { UPSTREAM_PLATFORMS } from '../../data/content'
+import { cn } from '../../lib/cn'
 import RoutingSchematic from './RoutingSchematic'
 
 /**
@@ -142,6 +144,37 @@ export default function Hero() {
             </div>
           </div>
         </div>
+
+        {/* The spec strip: the four numbers a reader wants before anything
+            else, set as a footer rule under both columns so the hero reads as a
+            finished sheet rather than a headline with a diagram beside it. */}
+        <dl
+          className="rise mt-14 grid grid-cols-2 gap-y-7 border-t border-line pt-7 sm:grid-cols-4"
+          style={{ animationDelay: '300ms' }}
+        >
+          {[
+            { label: t.spec.protocols, value: '3' },
+            { label: t.spec.upstreams, value: String(UPSTREAM_PLATFORMS.length) },
+            { label: t.spec.clients, value: '3' },
+            {
+              label: t.spec.version,
+              value: settings?.version ? `v${settings.version}` : '0.2.17',
+            },
+          ].map((spec, index) => (
+            <div
+              key={spec.label}
+              className={cn(
+                'flex flex-col gap-2 pr-4',
+                index > 0 && 'sm:border-l sm:border-line sm:pl-7',
+              )}
+            >
+              <dt className="text-mono-label">{spec.label}</dt>
+              <dd className="font-mono text-[15px] leading-none text-ink tabular-nums">
+                {spec.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </Container>
     </div>
   )

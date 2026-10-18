@@ -81,6 +81,11 @@ export const en: Dict = {
         body: 'LinuxDo, GitHub, Google, WeChat, OIDC and Passkey are all supported.',
       },
     ],
+    mechanisms: [
+      { term: 'Weighted', value: 'concurrency by weight' },
+      { term: 'Sticky', value: 'session pinned to one upstream' },
+      { term: 'Failover', value: 'unhealthy accounts pulled' },
+    ],
   },
   flow: {
     title: 'Three steps to connect',
@@ -109,6 +114,46 @@ export const en: Dict = {
   upstreams: {
     title: 'Upstream platforms',
     lead: 'One gateway in front of subscription accounts and official APIs alike.',
+  },
+  spec: {
+    protocols: 'Protocol families',
+    upstreams: 'Upstream platforms',
+    clients: 'Client CLIs',
+    version: 'Target release',
+  },
+  models: {
+    title: 'Model catalogue',
+    lead: 'Synced from the group and channel configuration in the admin console, listing every model a group can currently route to.',
+    groups: 'groups',
+    models: 'models',
+    free: 'free',
+    empty: 'This instance does not publish its model catalogue.',
+  },
+  faq: {
+    title: 'Common questions',
+    lead: 'What usually comes up before wiring this page into Sub2API.',
+    items: [
+      {
+        q: 'How do I put this page inside Sub2API?',
+        a: 'Open the site settings, find “Home content”, and paste this page’s deployed URL (it must start with https://). Sub2API then renders it full-screen in an iframe instead of its built-in home page.',
+      },
+      {
+        q: 'Do I need to edit the CSP?',
+        a: 'No. 0.2.17 reads the origin out of the home content URL and adds it to frame-src automatically, so a correct URL is all it takes.',
+      },
+      {
+        q: 'Why is there no billing entry in the header?',
+        a: 'That entry follows the instance payment switch. When online payment is off, the link is hidden rather than leading to an empty page.',
+      },
+      {
+        q: 'Does placeholder content flash on reload?',
+        a: 'No. The page reads its local cache first and revalidates in the background, so the first frame already shows the real name, icon and version.',
+      },
+      {
+        q: 'Which version is supported?',
+        a: 'Every public endpoint and route was checked against 0.2.17. Older builds may lack a field or two; missing data hides the element instead of breaking the page.',
+      },
+    ],
   },
   cta: {
     title: 'Connect your subscription today',

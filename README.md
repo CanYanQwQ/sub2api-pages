@@ -245,6 +245,9 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 | 15 个上游平台 | `Anthropic`、`OpenAI`、`Gemini`、`Antigravity`、`Grok`、`DeepSeek`、`Kimi`、`Zhipu`、`MiniMax`、`Kiro`、`Cline`、`OpenCode Go`、`Command Code`、`TypeSafe`、`Composite` |
 | 账号池与调度 / 密钥与分组 / 用量与账单 / 渠道监控 / 模型广场 / 多种登录方式 | 后台对应的六个功能区 |
 | 三步接入 | 绑定上游账号 → 创建 API Key → 替换 Base URL |
+| 模型目录（深色区块） | `GET /api/v1/model-plaza`，逐分组列出公开模型；接口关闭或需登录时整块消失 |
+| 常见问题 | 接入方式、CSP、导航开关、加载策略与版本兼容 |
+| 首屏规格条：3 / 15 / 3 / 版本号 | 协议族数、上游平台数、支持的 CLI 数、`settings.version` |
 | 页脚 `iframe / home_content` | 本页面自身的接入方式 |
 | 页脚版本号 | 「已连接」时显示实例真实版本，否则显示 `0.2.17` |
 
@@ -265,6 +268,9 @@ https://your-home.vercel.app/?theme=dark&lang=zh
 - **中文标题按语义断行。** 「变成」「还是」这类词不会在中间折行。
 - **字体全部自托管**：Archivo（拉丁展示）与 IBM Plex Mono（等宽标注）走 `@fontsource`，
   中文标题另用 Noto Sans SC 的子集（见下方「字体子集」），不依赖 Google Fonts CDN。
+- **模型目录是唯一换底色的区块，但它不是第二套配色。** `.sheet-invert` 只是把同一组
+  设计令牌在区块内重新赋值，所以 `bg-canvas`、`text-ink-2`、`border-line` 这些工具类
+  在区块内外都成立，深色主题下它会朝相反方向提亮，仍然读作「一个区块」。
 
 ---
 
