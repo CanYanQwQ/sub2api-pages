@@ -3,7 +3,7 @@ import type { Dict } from './zh'
 export const ja: Dict = {
   meta: {
     title: 'Sub2API',
-    description: 'サブスクリプションをひとつの API にまとめるセルフホスト型ゲートウェイ',
+    description: 'GPT・Claude・DeepSeek・GLM をひとつの API で使えるゲートウェイ',
   },
   nav: {
     docs: 'ドキュメント',
@@ -19,8 +19,8 @@ export const ja: Dict = {
     close: '閉じる',
   },
   hero: {
-    titleLines: ['サブスクリプションを、', 'ひとつの API キーに'],
-    lead: 'Claude Code、Codex、Gemini CLI などのアカウントをひとつのゲートウェイに集約し、OpenAI・Anthropic・Gemini 互換の API として提供します。クライアント側の変更はベース URL だけです。',
+    titleLines: ['ひとつのエンドポイント', 'すべてのモデルに対応'],
+    lead: 'GPT、Claude、DeepSeek、GLM などのモデルをひとつのゲートウェイに集約し、OpenAI・Anthropic・Gemini 三系統の互換 API として提供します。クライアント側はベース URL を差し替えるだけで、ほかの設定はそのまま使えます。',
     ctaPrimary: 'API キーを取得',
     statusConnecting: 'インスタンスを検出中',
     statusLive: '接続済み',

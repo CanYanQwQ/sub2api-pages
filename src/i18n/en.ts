@@ -3,7 +3,7 @@ import type { Dict } from './zh'
 export const en: Dict = {
   meta: {
     title: 'Sub2API',
-    description: 'A self-hosted gateway that turns AI subscriptions into one API',
+    description: 'One endpoint for GPT, Claude, DeepSeek and GLM, in a single API',
   },
   nav: {
     docs: 'Docs',
@@ -19,8 +19,8 @@ export const en: Dict = {
     close: 'Close',
   },
   hero: {
-    titleLines: ['Turn a subscription', 'into an API key'],
-    lead: 'Bring Claude Code, Codex and Gemini CLI accounts into one gateway that speaks OpenAI, Anthropic and Gemini. Clients only change a base URL.',
+    titleLines: ['One endpoint', 'for every model'],
+    lead: 'One gateway to GPT, Claude, DeepSeek and GLM, speaking all three of OpenAI, Anthropic and Gemini. Clients swap a base URL and leave the rest of their config alone.',
     ctaPrimary: 'Get an API key',
     statusConnecting: 'Detecting instance',
     statusLive: 'Connected',

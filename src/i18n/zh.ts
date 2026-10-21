@@ -1,7 +1,7 @@
 export const zh = {
   meta: {
     title: 'Sub2API',
-    description: '把订阅账号变成统一 AI 接口的自建网关',
+    description: '一个地址调用 GPT、Claude、DeepSeek、GLM 的统一 AI 接口',
   },
   nav: {
     docs: '文档',
@@ -17,9 +17,9 @@ export const zh = {
     close: '关闭',
   },
   hero: {
-    // Split on purpose: a single string lets the browser break inside 变成.
-    titleLines: ['把订阅额度', '变成一把 API Key'],
-    lead: '把 Claude Code、Codex、Gemini CLI 这类订阅账号接入同一个网关，对外提供 OpenAI、Anthropic 与 Gemini 兼容接口。客户端只需要改一个 Base URL。',
+    // Split on purpose: a single string lets the browser break inside 调用.
+    titleLines: ['一个接口地址', '调用所有大模型'],
+    lead: '同一个网关接入 GPT、Claude、DeepSeek、GLM 等主流模型，对外提供 OpenAI、Anthropic 与 Gemini 三套兼容接口。客户端只需替换 Base URL，其余配置不用动。',
     ctaPrimary: '获取 API Key',
     statusConnecting: '正在识别实例',
     statusLive: '已连接',
